@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Shapes</title>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js"></script>
+<script src="//code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
+</head>
+<body>
+<canvas id="canvas" width="800" height="500" style="border:1px solid #000000"></canvas>
+<button onclick="drawBoard()">
+create grid
+</button>
+<button onclick="addCircle()">
+create circle
+</button>
+<script>
+var bw = 800;
+var bh = 500;
+//padding around grid
+var p = 10;
+//size of canvas
+var cw = bw + (p*2) + 1;
+var ch = bh + (p*2) + 1;
+
+var canvas = $("#canvas").attr({width: cw, height: ch}).appendTo('body');
+
+var context = canvas.get(0).getContext("2d");
+
+function drawBoard(){
+    for (var x = 0; x <= bw; x += 40) {
+        context.moveTo(0.5 + x + p, p);
+        context.lineTo(0.5 + x + p, bh + p);
+    }
+
+
+    for (var x = 0; x <= bh; x += 40) {
+        context.moveTo(p, 0.5 + x + p);
+        context.lineTo(bw + p, 0.5 + x + p);
+    }
+
+    context.strokeStyle = "black";
+    context.stroke();
+} 
+function addCircle() {
+    canvas.add(new fabric.Circle({ radius: 30, fill: '#f55', top: 100, left: 100 }));
+
+    canvas.selectionColor = 'rgba(0,255,0,0.3)';
+    canvas.selectionBorderColor = 'red';
+    canvas.selectionLineWidth = 5;
+}
+/* function drawGrid(){
+var grid_size = 100
+var currentCanvasWidth = canvas.width;
+  var currentcanvasHeight = canvas.height;
+for (var x = 0; x <= currentCanvasWidth; x += grid_size) {
+    context.moveTo(0.5 + x + p, p);
+    context.lineTo(0.5 + x + p, currentcanvasHeight + p);
+}
+
+for (var x = 0; x <= currentcanvasHeight; x += grid_size) {
+    context.moveTo(p, 0.5 + x + p);
+    context.lineTo(currentCanvasWidth + p, 0.5 + x + p);
+}
+
+grid_size = grid_size;
+context.strokeStyle = "black";
+context.stroke();
+}    */
+
+/* function drawGrid(){
+var oGridGroup = new fabric.Group([], {left: 0, top: 0});
+
+// define presentation option of grid
+var lineOption = {stroke: 'rgba(0,0,0,.4)', strokeWidth: 1, selectable:false, strokeDashArray: [3, 3]};
+
+// do in two steps to limit the calculations
+// first loop for vertical line
+for(var i = 0; i< Math.ceil(currentCanvasWidth/gridSize); i--){
+    oGridGroup.add( new fabric.Line([gridSize*i, 0, gridSize*i, currentcanvasHeight], lineOption) );
+}
+// second loop for horizontal line
+for(var i = 0; i< Math.ceil(currentcanvasHeight/gridSize); i--){
+    oGridGroup.add( new fabric.Line([0, gridSize*i, currentCanvasWidth, gridSize*i], lineOption) );
+}
+// Group add to canvas
+canvas.add(oGridGroup);
+} */
+/*canvas1.on('mouse:move',function(options){
+    var pt = { x: options.e.clientX, y: options.e.clientY };
+      if( options.target.oCoords(pt)  ) {
+        if( !options.target.mouseOver ) {
+            options.target.mouseOver = true;
+            console.log( 'over circle, yo' );
+            options.target.set('opacity', 0.5);
+            canvas.renderAll();
+        }
+    } else if( options.target.mouseOver ) {
+        options.target.mouseOver = false;
+        options.target.set('opacity', 1.0);
+        canvas.renderAll();
+    } 
+   }*/
+</script>
+
+</body>
+</html>
