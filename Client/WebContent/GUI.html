@@ -36,33 +36,6 @@ Synchronize</button>
 <script>
 var canvas = new fabric.Canvas('canvas');
 var canvas1 = new fabric.Canvas('canvas1');
-/* var currentCanvasWidth = canvas.width;
-var currentcanvasHeight = canvas.height;
-var gridSize = 50;
-
-var context = canvas.getContext("2d");  */
-
-/* function drawGrid(gridSize){
-	gridSize || (gridSize = 100);
-	
-	  // Drawing vertical lines
-	  var x;
-	  for (x = 0; x <= currentCanvasWidth; x += gridSize) {
-	      context.moveTo(x + 0.5, 0);
-	      context.lineTo(x + 0.5, currentcanvasHeight);
-	  }
-
-	  // Drawing horizontal lines
-	  var y;
-	  for (y = 0; y <= currentcanvasHeight; y += gridSize) {
-	      context.moveTo(0, y + 0.5);
-	      context.lineTo(currentCanvasWidth, y + 0.5);
-	  }
-
-	  gridSize = gridSize;
-	  context.strokeStyle = "black";
-	  context.stroke();
-}    */
 
 function drawGrid(){
 	var noOfBlocks = $("#arrayNumber").val();
