@@ -20,13 +20,15 @@ Create Grid
 <td><canvas id="canvas1" width="500" height="500" style="border:1px solid #000000"></canvas>
 X: <input type="text" id="cursorx" class="input-box" placeholder="Click on canvas" />
 Y: <input type="text" id="cursory" class="input-box" placeholder="Click on canvas" />
-<button onclick="addSink()">
-Add Sink
-</button>
-<button onclick="addTable()">
-Add Dining Table
-</button>
+<select id="objectSelect">
+  <option value="Sink" selected>Sink</option>
+  <option value="Table">Table</option>
+</select>
+<button onClick="addObject()">Add</button>
 <button onClick="deleteObject()">Delete</button>
+</td>
+<td>
+<h1 id="messageDialog" style="margin-left:30%;margin-right:auto;display:block;margin-top:0%;margin-bottom:0%"></h1>
 </td>
 </tr>
 </table>
