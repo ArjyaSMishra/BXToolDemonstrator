@@ -10,6 +10,7 @@
 <link rel = "stylesheet" type = "text/css" href = "css/style.css" />
 </head>
 <body>
+<!-- <form action="PilotController" method="post"> -->
 
 <table>
 <tr>
@@ -31,16 +32,18 @@ Y: <input type="text" id="cursory" class="input-box" placeholder="Click on canva
 </td>
 <td>
 <h1 id="messageDialog" style="margin-left:30%;margin-right:auto;display:block;margin-top:0%;margin-bottom:0%"></h1>
+<%-- <h2 id="messageDialog" style="margin-left:30%;margin-right:auto;display:block;margin-top:0%;margin-bottom:0%">block size: ${requestScope['blocksize']}</h2> --%>
 </td>
 </tr>
 </table>
 
 <div style="width:100%;height:100%;position:absolute;vertical-align:middle;text-align:center;">
-    <button type="button" style="margin-left:30%;margin-right:auto;display:block;margin-top:2%;margin-bottom:0%">
+    <button type="submit" style="margin-left:30%;margin-right:auto;display:block;margin-top:2%;margin-bottom:0%">
 Synchronize</button> 
 </div>​
 
 <script src="js/logic.js"></script>
 
+<!-- </form> -->
 </body>
 </html>
