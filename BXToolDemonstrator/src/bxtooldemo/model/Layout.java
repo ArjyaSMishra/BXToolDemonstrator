@@ -1,10 +1,11 @@
 package bxtooldemo.model;
 
-public class CanvasLow extends Canvas {
-
+public class Layout extends Canvas {
+	
 	public Rectangle[] blocks;
 	
-	public CanvasLow(){
+	public Layout(){
 		super(500, 500);
 	}
+
 }

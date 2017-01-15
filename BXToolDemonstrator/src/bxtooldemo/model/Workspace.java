@@ -1,11 +1,10 @@
 package bxtooldemo.model;
 
-public class CanvasHigh extends Canvas {
-	
+public class Workspace extends Canvas {
+
 	public Circle[] objects;
 	
-	public CanvasHigh(){
+	public Workspace(){
 		super(500, 500);
 	}
-
 }

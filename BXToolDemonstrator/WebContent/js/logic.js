@@ -5,8 +5,8 @@
 var canvas = new fabric.Canvas('canvas');
 var canvas1 = new fabric.Canvas('canvas1');
 var object_counter = 0;
-var x = 510;
-var y = 10;
+var x = 512;
+var y = 12;
 
 function drawGrid(){
 	var noOfBlocks = $("#arrayNumber").val();
@@ -42,10 +42,10 @@ function drawGrid(){
 	            subType: 'button',
 	            id: 'button_' + i + '_' + j
 	    };
-	        var c = new fabric.Rect(gOptions);
+	        //var c = new fabric.Rect(gOptions);
 	        var r = new fabric.Rect(rOptions);
 	        
-	        canvas.add(c);
+	        //canvas.add(c);
 	        canvas.add(r);
 	    }
 	}
@@ -65,6 +65,47 @@ function showInfo(val) {
 
 function deleteObject() {
     canvas1.getActiveObject().remove();
+}
+
+function synchroTransform() {
+	
+	var jsonObj = {
+			id: canvas1.getObjects()[0].get('id'),
+		    posX:canvas1.getObjects()[0].get('left'),
+		    posY:canvas1.getObjects()[0].get('top'),
+		    fillColor: canvas1.getObjects()[0].get('fill')
+			}
+
+	$.ajax({
+        url: 'PilotController',
+        type: 'POST',
+        dataType: 'json',
+        data: { 
+            loadProds: 1,
+            jsonData: JSON.stringify(jsonObj) 
+          },
+        success: function(data){
+            for(var i= 0; i< canvas.getObjects().length; i++){
+            	if(canvas.getObjects()[i].get('id') === data.id){
+            		canvas.getObjects()[i].setFill(data.fillColor);
+            		canvas.renderAll();
+            	}
+            		
+            }
+        }
+         });
+	//console.log(JSON.stringify(canvas));
+}
+
+function createProg(){
+	$.ajax({
+        url: 'PilotController',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data){
+            canvas1.add(new fabric.Circle({ radius: 10, fill: data[0].fillColor, left:data[0].posX, top:data[0].posY, id: data[0].id }));
+        }
+         });
 }
 
 canvas.hoverCursor = 'pointer';
