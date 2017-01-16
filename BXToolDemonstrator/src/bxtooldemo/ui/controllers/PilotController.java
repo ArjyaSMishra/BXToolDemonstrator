@@ -1,4 +1,4 @@
-package bxtooldemo.controllers;
+package bxtooldemo.ui.controllers;
 
 import java.io.IOException;
 
@@ -12,10 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import bxtooldemo.businesslayer.Initializer;
-import bxtooldemo.model.Circle;
-import bxtooldemo.model.Rectangle;
-import bxtooldemo.model.Workspace;
+import bxtooldemo.ui.core.Initializer;
+import bxtooldemo.ui.models.Circle;
+import bxtooldemo.ui.models.Rectangle;
+import bxtooldemo.ui.models.Workspace;
 
 /**
  * Servlet implementation class PilotController

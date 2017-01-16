@@ -1,6 +1,6 @@
-package bxtooldemo.businesslayer;
+package bxtooldemo.ui.core;
 
-import bxtooldemo.model.*;
+import bxtooldemo.ui.models.*;
 
 public class Initializer {
 	

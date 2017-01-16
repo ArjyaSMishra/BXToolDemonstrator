@@ -1,4 +1,4 @@
-package bxtooldemo.model;
+package bxtooldemo.ui.models;
 
 public class Layout extends Canvas {
 	
