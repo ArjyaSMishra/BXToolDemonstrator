@@ -8,8 +8,28 @@ var object_counter = 0;
 var x = 512;
 var y = 12;
 
-function drawGrid(){
-	var noOfBlocks = $("#arrayNumber").val();
+window.onload = init;
+
+function init(){
+	console.log("gggg11");
+	var initGridNo = 5;
+	$.ajax({
+      url: 'InitController',
+      type: 'GET',
+      dataType: 'json',
+      success: function(data){
+      	console.log(data);
+//      	var Layout = new fabric.Canvas('Layout');
+//      	var Workspace = new fabric.Canvas('Workspace');
+      	
+      	drawGrid(3);
+      }
+       });
+}
+
+function drawGrid(noofgrid){
+	var noOfBlocks = noofgrid;
+	//var noOfBlocks = $("#arrayNumber").val();
 	var blockHeight = canvas.height/noOfBlocks;
 	var blockWidth = canvas.width/noOfBlocks;
 	for (var i = 0; i < noOfBlocks; i++) {

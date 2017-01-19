@@ -1,10 +1,12 @@
 package bxtooldemo.ui.core.datastructures;
 
+import java.util.List;
 import java.util.Map;
+
+import bxtooldemo.ui.models.Circle;
 
 public abstract class Delta {
 	
-	public String id;
-	public Map<String, Map<String, String>> change;
+	public Map<String, Circle> change;
 
 }
