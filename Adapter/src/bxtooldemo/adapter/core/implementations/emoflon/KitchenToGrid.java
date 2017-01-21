@@ -1,5 +1,6 @@
 package bxtooldemo.adapter.core.implementations.emoflon;
 
+import java.io.File;
 import java.util.function.Consumer;
 
 import org.apache.log4j.BasicConfigurator;
@@ -10,17 +11,16 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.moflon.tgg.algorithm.synchronization.SynchronizationHelper;
-import bxtooldemo.adapter.models.Decisions;
 
-import KitchenLanguage.Kitchen;
-import KitchenLanguage.KitchenLanguageFactory;
-import KitchenToGridLanguage.KitchenToGridLanguagePackage;
 import GridLanguage.Grid;
 import GridLanguage.GridLanguageFactory;
+import KitchenLanguage.Kitchen;
+import KitchenToGridLanguage.KitchenToGridLanguagePackage;
+import bxtooldemo.adapter.models.Decisions;
 
-public class KitchenToGrid extends BXToolForEMF<Kitchen, Grid, Decisions> {
+public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 	
-	public KitchenToGrid(Comparator<Kitchen> src, Comparator<Grid> trg) {
+	public KitchenToGrid(Comparator<Grid> src, Comparator<Kitchen> trg) {
 		super(src, trg);
 	}
 	
@@ -37,11 +37,13 @@ public class KitchenToGrid extends BXToolForEMF<Kitchen, Grid, Decisions> {
 
 	@Override
 	public void initiateSynchronisationDialogue() {
-		// TODO Auto-generated method stub
+		
 		BasicConfigurator.configure();
-		helper = new SynchronizationHelper(KitchenToGridLanguagePackage.eINSTANCE, "../../eMoflon-Rules/KitchenToGridLanguage");
+		System.out.println(new File("KitchenToGridLanguage").getAbsolutePath());
+		helper = new SynchronizationHelper(KitchenToGridLanguagePackage.eINSTANCE, "C:/Users/Arjya Shankar Mishra/git/eMoflon-Rules/KitchenToGridLanguage");
 		Resource r = helper.getResourceSet().createResource(URI.createURI("sourceModel"));
-		Kitchen gridRoot = KitchenLanguageFactory.eINSTANCE.createKitchen();
+		Grid gridRoot = GridLanguageFactory.eINSTANCE.createGrid();
+		gridRoot.setBlockSize(100);
 		r.getContents().add(gridRoot);
 		
 		// Fix default preferences (which can be overwritten)
@@ -58,17 +60,17 @@ public class KitchenToGrid extends BXToolForEMF<Kitchen, Grid, Decisions> {
 	}
 
 	@Override
-	public void performAndPropagateTargetEdit(Consumer<Grid> edit) {
-		// TODO Auto-generated method stub
-		helper.setChangeTrg((EObject root) ->  edit.accept((Grid) root));
+	public void performAndPropagateTargetEdit(Consumer<Kitchen> edit) {
+		
+		helper.setChangeTrg((EObject root) ->  edit.accept((Kitchen) root));
 		helper.integrateBackward();
 		
 	}
 
 	@Override
-	public void performAndPropagateSourceEdit(Consumer<Kitchen> edit) {
-		// TODO Auto-generated method stub
-		helper.setChangeSrc((EObject root) ->  edit.accept((Kitchen) root));
+	public void performAndPropagateSourceEdit(Consumer<Grid> edit) {
+		
+		helper.setChangeSrc((EObject root) ->  edit.accept((Grid) root));
 		helper.integrateForward();
 		
 	}
@@ -79,13 +81,13 @@ public class KitchenToGrid extends BXToolForEMF<Kitchen, Grid, Decisions> {
 	}
 
 	@Override
-	public Kitchen getSourceModel() {
-		return (Kitchen) helper.getSrc();
+	public Grid getSourceModel() {
+		return (Grid) helper.getSrc();
 	}
 
 	@Override
-	public Grid getTargetModel() {
-		return (Grid) helper.getTrg();
+	public Kitchen getTargetModel() {
+		return (Kitchen) helper.getTrg();
 	}
 	
 

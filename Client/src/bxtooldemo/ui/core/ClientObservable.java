@@ -29,7 +29,7 @@ public class ClientObservable extends Observable {
 	   public void notifyAllObservers(){
 		   System.out.println("inside notify from observable");
 	      for (Observer observer : observers) {
-	         observer.update(null, observer);
+	         observer.update(this, null);
 	      }
 	   } 	
 

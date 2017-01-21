@@ -1,8 +1,8 @@
 package bxtooldemo.ui.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Observer;
+import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +14,6 @@ import com.google.gson.Gson;
 
 import bxtooldemo.ui.core.ClientObservable;
 import bxtooldemo.ui.models.Canvas;
-import bxtooldemo.ui.models.Item;
 
 
 
@@ -40,28 +39,32 @@ public class InitController extends HttpServlet {
 		// TODO Auto-generated method stub
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		
-//		List<Item> items = new ArrayList<Item>();
-//		 Item a = new Item();
-//		 a.name = "Sink";
-//		 Item b = new Item();
-//		 b.name = "Sink";
-//		 
-//		items.add(a);
-//		items.add(b);
 		Canvas canvas = new Canvas(500, 500);
         ClientObservable clientObser = new ClientObservable();
+        createObserver().ifPresent(o -> clientObser.attach(o));
 		clientObser.setCanvas(canvas);
+		
 		System.out.println("inside doGet of InitController after canvas is initialized");
-
-	     //if (items != null){
 		
 		   //ServletOutputStream outputStream = response.getOutputStream();
 	    	//outputStream.print(new Gson().toJson(w1.objects));
 	    	 
 		   response.setContentType("application/json;charset=UTF-8");
-		   response.getWriter().println( new Gson().toJson(canvas));
-	    // }	
+		   response.getWriter().println( new Gson().toJson(canvas));	
+	}
+
+	private Optional<Observer> createObserver() {
+		Class<Observer> obClass;
+		try {
+			//obClass = (Class<Observer>) this.getClass().getClassLoader().loadClass("bxtooldemo.adapter.core.AdapterObserver");
+			obClass = (Class<Observer>)Class.forName("bxtooldemo.adapter.core.AdapterObserver");
+			Observer ob = obClass.newInstance();
+			return Optional.of(ob);
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 		
+		return Optional.empty();
 	}
 
 	/**

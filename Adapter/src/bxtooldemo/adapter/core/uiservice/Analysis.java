@@ -40,8 +40,8 @@ public class Analysis extends AdapterService{
 		// TODO Auto-generated method stub
 		
 		//conversion code here
-		Kitchen kitchen = kitchenToGrid.getSourceModel();
-		Grid grid = kitchenToGrid.getTargetModel();
+		Kitchen kitchen = kitchenToGrid.getTargetModel();
+		Grid grid = kitchenToGrid.getSourceModel();
 		UIModels uiModels = convertToUIModels(kitchen, grid);
 		
 		setUIModels(uiModels.layout, uiModels.workspace);
@@ -56,6 +56,9 @@ public class Analysis extends AdapterService{
 		uiModelsAdapter = new UIModels();
 		
 		layoutAdapter.name = "fromadapter";
+		workspaceAdapter.setWidth((int) kitchen.getXSize());
+		
+		System.out.println(workspaceAdapter.getWidth());
 		
 		uiModelsAdapter.layout = layoutAdapter;
 		uiModelsAdapter.workspace = workspaceAdapter;

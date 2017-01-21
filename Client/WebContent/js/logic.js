@@ -11,20 +11,21 @@ var y = 12;
 window.onload = init;
 
 function init(){
-	console.log("gggg11");
+	console.log("inside init -- before controller callrt");
 	var initGridNo = 5;
 	$.ajax({
       url: 'InitController',
       type: 'GET',
       dataType: 'json',
       success: function(data){
-      	console.log(data);
+      	console.log("success from init get");
 //      	var Layout = new fabric.Canvas('Layout');
 //      	var Workspace = new fabric.Canvas('Workspace');
       	
-      	drawGrid(3);
+      	drawGrid(5);
       }
        });
+	console.log("inside init -- after controller call");
 }
 
 function drawGrid(noofgrid){

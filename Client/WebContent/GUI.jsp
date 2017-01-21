@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <title>Shapes</title>
 <script src="js/fabric.js"></script>
-<script src="//code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
+<script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
 <link rel = "stylesheet" type = "text/css" href = "css/style.css" />
 </head>
 <body>
