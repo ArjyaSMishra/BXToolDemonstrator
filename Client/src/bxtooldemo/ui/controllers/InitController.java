@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import bxtooldemo.adapter.core.uiservice.Analysis;
+import bxtooldemo.adapter.uimodels.Canvas;
+import bxtooldemo.adapter.uimodels.UIModels;
 import bxtooldemo.ui.core.ClientObservable;
-import bxtooldemo.ui.models.Canvas;
 
 
 
@@ -39,18 +41,20 @@ public class InitController extends HttpServlet {
 		// TODO Auto-generated method stub
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		
-		Canvas canvas = new Canvas(500, 500);
-        ClientObservable clientObser = new ClientObservable();
-        createObserver().ifPresent(o -> clientObser.attach(o));
-		clientObser.setCanvas(canvas);
+		System.out.println("inside doGet of InitController before adapter is called");
+		Analysis adapterAnalysis = new Analysis();
+		UIModels uimodels = new UIModels();
 		
-		System.out.println("inside doGet of InitController after canvas is initialized");
+		uimodels = adapterAnalysis.getUIModels();
+		System.out.println("inside doGet of InitController after getting uimodels-test");
+		System.out.println("uimodels: "+ uimodels.workspace);
+		
 		
 		   //ServletOutputStream outputStream = response.getOutputStream();
 	    	//outputStream.print(new Gson().toJson(w1.objects));
 	    	 
 		   response.setContentType("application/json;charset=UTF-8");
-		   response.getWriter().println( new Gson().toJson(canvas));	
+		   response.getWriter().println( new Gson().toJson(uimodels));	
 	}
 
 	private Optional<Observer> createObserver() {

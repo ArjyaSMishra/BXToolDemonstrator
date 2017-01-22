@@ -7,9 +7,9 @@ import GridLanguage.Grid;
 import KitchenLanguage.Kitchen;
 import bxtooldemo.adapter.core.implementations.emoflon.KitchenToGrid;
 import bxtooldemo.adapter.core.uiservice.Analysis;
-import bxtooldemo.ui.core.ClientObservable;
-import bxtooldemo.ui.models.Canvas;
-import bxtooldemo.ui.models.UIModels;
+import bxtooldemo.adapter.uimodels.Canvas;
+import bxtooldemo.adapter.uimodels.UIModels;
+
 
 public class AdapterObserver implements Observer{
 
@@ -43,20 +43,21 @@ public class AdapterObserver implements Observer{
 		Analysis analysis = new Analysis();
 		UIModels uiModels = analysis.convertToUIModels(kitchen, grid);
 		analysis.setUIModels(uiModels.layout, uiModels.workspace);
+		System.out.println("after analysis done inside observer"); 
 		
 	}
 	
 	public static void main(String[] args) {
 	
-		ClientObservable observable = new ClientObservable();
-		AdapterObserver observer = new AdapterObserver();
-		//AdapterObserver observer = new AdapterObserver(observable);
-	    //observable.addObserver(observer);
-		observable.attach(observer);
-	            
-	    Canvas canvas = new Canvas(500, 500);	
-	    observable.setCanvas(canvas);
-	
+//		ClientObservable observable = new ClientObservable();
+//		AdapterObserver observer = new AdapterObserver();
+//		//AdapterObserver observer = new AdapterObserver(observable);
+//	    //observable.addObserver(observer);
+//		observable.attach(observer);
+//	            
+//	    Canvas canvas = new Canvas(500, 500);	
+//	    observable.setCanvas(canvas);
+//	
 	}
 
 }

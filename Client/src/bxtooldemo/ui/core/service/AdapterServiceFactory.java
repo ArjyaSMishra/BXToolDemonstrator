@@ -3,16 +3,16 @@ package bxtooldemo.ui.core.service;
 import java.util.List;
 import java.util.Map;
 
-import bxtooldemo.ui.core.datastructures.Delta;
-import bxtooldemo.ui.models.Layout;
-import bxtooldemo.ui.models.UIModels;
-import bxtooldemo.ui.models.Workspace;
+//import bxtooldemo.adapter.uimodels.Layout;
+//import bxtooldemo.adapter.uimodels.UIModels;
+//import bxtooldemo.adapter.uimodels.Workspace;
+//import bxtooldemo.ui.core.datastructures.Delta;
 
 public interface AdapterServiceFactory {
 	
-	public void setUIModels(Layout layout, Workspace workspace);
+	//public void setUIModels(Layout layout, Workspace workspace);
 	
-	public void propagateDelta(List<Delta> changes);
+	//public void propagateDelta(List<Delta> changes);
 //	
 //	public void getUIData();
 	

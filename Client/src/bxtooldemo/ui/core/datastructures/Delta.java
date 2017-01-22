@@ -3,7 +3,7 @@ package bxtooldemo.ui.core.datastructures;
 import java.util.List;
 import java.util.Map;
 
-import bxtooldemo.ui.models.Circle;
+import bxtooldemo.adapter.uimodels.Circle;
 
 public abstract class Delta {
 	

@@ -6,5 +6,5 @@ Bundle-Version: 1.0.0.qualifier
 Export-Package: bxtooldemo.ui.controllers,
  bxtooldemo.ui.core,
  bxtooldemo.ui.core.datastructures,
- bxtooldemo.ui.core.service,
- bxtooldemo.ui.models
+ bxtooldemo.ui.core.service
+Require-Bundle: Adapter;bundle-version="1.0.0"

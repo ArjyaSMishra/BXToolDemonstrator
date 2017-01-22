@@ -12,10 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import bxtooldemo.ui.core.Initializer;
-import bxtooldemo.ui.models.Circle;
-import bxtooldemo.ui.models.Rectangle;
-import bxtooldemo.ui.models.Workspace;
+import bxtooldemo.adapter.uimodels.Circle;
+import bxtooldemo.adapter.uimodels.Rectangle;
+import bxtooldemo.adapter.uimodels.Workspace;
+
 
 /**
  * Servlet implementation class PilotController

@@ -11,14 +11,15 @@ var y = 12;
 window.onload = init;
 
 function init(){
-	console.log("inside init -- before controller callrt");
+	console.log("inside init -- before controller callllbc");
 	var initGridNo = 5;
 	$.ajax({
       url: 'InitController',
       type: 'GET',
       dataType: 'json',
       success: function(data){
-      	console.log("success from init get");
+      	console.log("success from init getbb");
+      	console.log(data);
 //      	var Layout = new fabric.Canvas('Layout');
 //      	var Workspace = new fabric.Canvas('Workspace');
       	

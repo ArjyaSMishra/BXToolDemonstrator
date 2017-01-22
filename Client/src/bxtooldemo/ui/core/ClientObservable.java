@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import bxtooldemo.ui.models.Canvas;
+import bxtooldemo.adapter.uimodels.Canvas;
 
 public class ClientObservable extends Observable {
 	

@@ -1,4 +1,4 @@
-package bxtooldemo.ui.models;
+package bxtooldemo.adapter.uimodels;
 
 import java.util.List;
 
