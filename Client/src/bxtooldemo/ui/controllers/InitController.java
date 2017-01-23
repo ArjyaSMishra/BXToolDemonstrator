@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.util.Observer;
 import java.util.Optional;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 
@@ -41,15 +43,15 @@ public class InitController extends HttpServlet {
 		// TODO Auto-generated method stub
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		
-		System.out.println("inside doGet of InitController before adapter is called");
 		Analysis adapterAnalysis = new Analysis();
 		UIModels uimodels = new UIModels();
 		
+//		Canvas canvas = new Canvas(500, 500);
+//        ClientObservable clientObser = new ClientObservable();
+//        createObserver().ifPresent(o -> clientObser.attach(o));
+//		clientObser.setCanvas(canvas);
+		
 		uimodels = adapterAnalysis.getUIModels();
-		System.out.println("inside doGet of InitController after getting uimodels-test");
-		System.out.println("uimodels: "+ uimodels.workspace);
-		
-		
 		   //ServletOutputStream outputStream = response.getOutputStream();
 	    	//outputStream.print(new Gson().toJson(w1.objects));
 	    	 

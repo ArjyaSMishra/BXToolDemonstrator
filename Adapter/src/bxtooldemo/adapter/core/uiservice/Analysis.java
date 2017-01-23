@@ -16,27 +16,19 @@ public class Analysis{
 	private KitchenToGrid kitchenToGrid;
 	private Kitchen kitchen;
 	private Grid grid;
+	private UIModels uiModelsAdapter;
 	
 	public UIModels getUIModels() {
 		
-		//conversion code here
-		System.out.println("start getuimodels");
 		this.kitchenToGrid = new KitchenToGrid(5);
 		this.kitchenToGrid.initiateSynchronisationDialogue();
-		System.out.println("inside getuimodels -- after init");
 		
 		this.grid = kitchenToGrid.getSourceModel();
 		this.kitchen = kitchenToGrid.getTargetModel();
 		
+		this.uiModelsAdapter = convertToUIModels(kitchen, grid);
 		
-		System.out.println("srccr model--" + this.grid);
-		System.out.println("trgg model--" + this.kitchen); 
-		
-		UIModels uiModelsAdapter = convertToUIModels(kitchen, grid);
-		System.out.println("after analysis done inside getuimodels: " + uiModelsAdapter.workspace);
-		
-		return uiModelsAdapter;
-		
+		return this.uiModelsAdapter;
 	}
 	
 	public void setUIModels(Layout layout, Workspace workspace){
@@ -49,20 +41,17 @@ public class Analysis{
 	
 	public UIModels convertToUIModels(Kitchen kitchen, Grid grid){
 		//conversion code here
-		
 		Layout layoutAdapter = new Layout();
 		Workspace workspaceAdapter = new Workspace();
-		UIModels uiModelsAdapter = new UIModels();
+		UIModels uiModelAdapter = new UIModels();
 		
-		layoutAdapter.name = "fromadapter";
+		layoutAdapter.name = "fromadapterrr";
 		workspaceAdapter.setWidth((int) kitchen.getXSize());
 		
-		System.out.println(workspaceAdapter.getWidth());
+		uiModelAdapter.layout = layoutAdapter;
+		uiModelAdapter.workspace = workspaceAdapter;
 		
-		uiModelsAdapter.layout = layoutAdapter;
-		uiModelsAdapter.workspace = workspaceAdapter;
-		
-		return new UIModels();
+		return uiModelAdapter;
 	}
 	
     public void convertFromUIModels(){

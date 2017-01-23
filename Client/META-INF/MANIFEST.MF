@@ -4,7 +4,5 @@ Bundle-Name: Client
 Bundle-SymbolicName: Client
 Bundle-Version: 1.0.0.qualifier
 Export-Package: bxtooldemo.ui.controllers,
- bxtooldemo.ui.core,
- bxtooldemo.ui.core.datastructures,
- bxtooldemo.ui.core.service
+ bxtooldemo.ui.core
 Require-Bundle: Adapter;bundle-version="1.0.0"

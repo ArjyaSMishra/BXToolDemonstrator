@@ -2,38 +2,44 @@
  * 
  */
 
-var canvas = new fabric.Canvas('canvas');
-var canvas1 = new fabric.Canvas('canvas1');
+//var canvas = new fabric.Canvas('canvas');
+//var canvas1 = new fabric.Canvas('canvas1');
 var object_counter = 0;
 var x = 512;
 var y = 12;
+var Layout = new fabric.Canvas('canvas');
+var Workspace= new fabric.Canvas('canvas1');
 
 window.onload = init;
 
 function init(){
-	console.log("inside init -- before controller callllbc");
-	var initGridNo = 5;
 	$.ajax({
       url: 'InitController',
       type: 'GET',
       dataType: 'json',
       success: function(data){
-      	console.log("success from init getbb");
-      	console.log(data);
-//      	var Layout = new fabric.Canvas('Layout');
-//      	var Workspace = new fabric.Canvas('Workspace');
-      	
-      	drawGrid(5);
+      	initVisualize(data);
       }
        });
-	console.log("inside init -- after controller call");
+}
+
+function initVisualize(uiModels){
+	Layout.setDimensions({width:uiModels.layout.width, height:uiModels.layout.height});
+  	Workspace.setDimensions({width:uiModels.workspace.width, height:uiModels.workspace.width});
+  	
+  	drawGrid(5);
+}
+
+function changeVisualize(uiModels){
+	Layout.setDimensions({width:uiModels.layout.width, height:uiModels.layout.height});
+  	Workspace.setDimensions({width:uiModels.workspace.width, height:uiModels.workspace.width});
 }
 
 function drawGrid(noofgrid){
 	var noOfBlocks = noofgrid;
 	//var noOfBlocks = $("#arrayNumber").val();
-	var blockHeight = canvas.height/noOfBlocks;
-	var blockWidth = canvas.width/noOfBlocks;
+	var blockHeight = Layout.height/noOfBlocks;
+	var blockWidth = Layout.width/noOfBlocks;
 	for (var i = 0; i < noOfBlocks; i++) {
 	    for (var j = 0; j < noOfBlocks; j++) {
 	        var gOptions = {
@@ -68,7 +74,7 @@ function drawGrid(noofgrid){
 	        var r = new fabric.Rect(rOptions);
 	        
 	        //canvas.add(c);
-	        canvas.add(r);
+	        Layout.add(r);
 	    }
 	}
 	$("#grid_btn").disabled = false;
@@ -77,7 +83,7 @@ function drawGrid(noofgrid){
 
 function addObject() {
 	var object= $("#objectSelect").val();
-	canvas1.add(new fabric.Circle({ radius: 10, fill: '#f55', left:x-510, top:y-10, id: object+"_"+ object_counter }));
+	Workspace.add(new fabric.Circle({ radius: 10, fill: '#f55', left:x-510, top:y-10, id: object+"_"+ object_counter }));
 	object_counter++;
 }
 
@@ -86,16 +92,16 @@ function showInfo(val) {
 }
 
 function deleteObject() {
-    canvas1.getActiveObject().remove();
+    Workspace.getActiveObject().remove();
 }
 
 function synchroTransform() {
 	
 	var jsonObj = {
-			id: canvas1.getObjects()[0].get('id'),
-		    posX:canvas1.getObjects()[0].get('left'),
-		    posY:canvas1.getObjects()[0].get('top'),
-		    fillColor: canvas1.getObjects()[0].get('fill')
+			id: Workspace.getObjects()[0].get('id'),
+		    posX:Workspace.getObjects()[0].get('left'),
+		    posY:Workspace.getObjects()[0].get('top'),
+		    fillColor: Workspace.getObjects()[0].get('fill')
 			}
 
 	$.ajax({
@@ -107,10 +113,10 @@ function synchroTransform() {
             jsonData: JSON.stringify(jsonObj) 
           },
         success: function(data){
-            for(var i= 0; i< canvas.getObjects().length; i++){
-            	if(canvas.getObjects()[i].get('id') === data.id){
-            		canvas.getObjects()[i].setFill(data.fillColor);
-            		canvas.renderAll();
+            for(var i= 0; i< Layout.getObjects().length; i++){
+            	if(Layout.getObjects()[i].get('id') === data.id){
+            		Layout.getObjects()[i].setFill(data.fillColor);
+            		Layout.renderAll();
             	}
             		
             }
@@ -125,22 +131,22 @@ function createProg(){
         type: 'GET',
         dataType: 'json',
         success: function(data){
-            canvas1.add(new fabric.Circle({ radius: 10, fill: data[0].fillColor, left:data[0].posX, top:data[0].posY, id: data[0].id }));
+            Workspace.add(new fabric.Circle({ radius: 10, fill: data[0].fillColor, left:data[0].posX, top:data[0].posY, id: data[0].id }));
         }
          });
 }
 
-canvas.hoverCursor = 'pointer';
-canvas1.hoverCursor = 'pointer';
+Layout.hoverCursor = 'pointer';
+Workspace.hoverCursor = 'pointer';
 
-canvas1.on('mouse:down', function(options){
+Workspace.on('mouse:down', function(options){
 	$("#cursorx").val(options.e.clientX);
 	$("#cursory").val(options.e.clientY);
 	x = options.e.clientX;
 	y = options.e.clientY;
 	});
 	
-canvas1.on('mouse:move',function(options){
+Workspace.on('mouse:move',function(options){
     var pt = { x: options.e.clientX, y: options.e.clientY };
     
     if(options.target!= null) {
@@ -148,27 +154,27 @@ canvas1.on('mouse:move',function(options){
     }  
 });
 
-canvas1.on('mouse:out', function(e) {
+Workspace.on('mouse:out', function(e) {
 	$('#messageDialog').text("");
   });
   
-canvas1.on('object:added', function(e) {
+Workspace.on('object:added', function(e) {
     if(e.target!= null) {
     	console.log(e.target.id + " created");
     } 
  });
  
-canvas1.on('object:removed', function(e) {
+Workspace.on('object:removed', function(e) {
     if(e.target!= null) {
     	console.log(e.target.id + " deleted");
     } 
  });
  
-canvas1.on('object:moving', function(e) {
+Workspace.on('object:moving', function(e) {
     console.log("object moved to Y: " + e.e.clientY);
  });
 
-canvas.on('mouse:down', function (e) {
+Layout.on('mouse:down', function (e) {
         if (e.target.get('subType') == 'button') {
         	
             console.log('button ' + e.target.id + ' was clicked');
@@ -192,8 +198,8 @@ canvas.on('mouse:down', function (e) {
               e.target.setFill("transparent");
               break;
           }
-            canvas.renderAll();
+            Layout.renderAll();
         }
 });
 
-canvas1.renderAll();
+Workspace.renderAll();

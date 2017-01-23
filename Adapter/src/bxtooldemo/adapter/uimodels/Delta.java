@@ -1,9 +1,7 @@
-package bxtooldemo.ui.core.datastructures;
+package bxtooldemo.adapter.uimodels;
 
 import java.util.List;
 import java.util.Map;
-
-import bxtooldemo.adapter.uimodels.Circle;
 
 public abstract class Delta {
 	
