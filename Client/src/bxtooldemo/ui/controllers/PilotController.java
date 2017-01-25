@@ -55,12 +55,12 @@ public class PilotController extends HttpServlet {
 		}
 		
 		Rectangle rect = new Rectangle();
-		rect.xIndex = (int) Math.floor(data.posX/100);
-		rect.yIndex = (int) Math.floor(data.posY/100);
-		if(rect.yIndex < 0) rect.yIndex = 0;
-		if(rect.xIndex < 0) rect.xIndex = 0;
-		rect.id= "button_"+ rect.xIndex +"_"+ rect.yIndex;
-		rect.fillColor = "#ffff00";
+		rect.setxIndex((int) Math.floor(data.getPosX()/100));
+		rect.setyIndex((int) Math.floor(data.getPosY()/100));
+		if(rect.getyIndex() < 0) rect.setyIndex(0);
+		if(rect.getxIndex() < 0) rect.setxIndex(0);
+		rect.setId("button_"+ rect.getxIndex() +"_"+ rect.getyIndex());
+		rect.setFillColor("#ffff00");
 		
 		//System.out.println(rect.id);
 		response.setContentType("application/json;charset=UTF-8"); 
@@ -70,23 +70,22 @@ public class PilotController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	   Circle c1 = new Circle();
-	   c1.id= "sink1";
-	   c1.posX = 180;
-	   c1.posY = 270;
-	   c1.fillColor = "#f55";
+	   c1.setId("sink1");
+	   c1.setPosX(180);
+	   c1.setPosY(270);
+	   c1.setFillColor("#f55");
 	   
 	   Workspace w1 = new Workspace();
 	   
-	   w1.objects = new Circle[100];
-	   w1.objects[0] = c1;
+	   w1.setObjects(c1);
 
-     if (w1.objects != null){
+     if (w1.getObjects() != null){
 	
 	   //ServletOutputStream outputStream = response.getOutputStream();
     	//outputStream.print(new Gson().toJson(w1.objects));
     	 
 	   response.setContentType("application/json;charset=UTF-8");
-	   response.getWriter().println( new Gson().toJson( w1.objects));
+	   response.getWriter().println( new Gson().toJson( w1.getObjects()));
      }
 	  
 	}

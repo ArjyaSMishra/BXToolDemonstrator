@@ -1,6 +1,7 @@
 package bxtooldemo.ui.controllers;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Observer;
 import java.util.Optional;
 
@@ -13,9 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import bxtooldemo.adapter.core.uiservice.Analysis;
 import bxtooldemo.adapter.uimodels.Canvas;
+import bxtooldemo.adapter.uimodels.Change;
+import bxtooldemo.adapter.uimodels.Circle;
 import bxtooldemo.adapter.uimodels.UIModels;
 import bxtooldemo.ui.core.ClientObservable;
 
@@ -27,6 +31,7 @@ import bxtooldemo.ui.core.ClientObservable;
 @WebServlet("/InitController")
 public class InitController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private Analysis adapterAnalysis;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -35,15 +40,16 @@ public class InitController extends HttpServlet {
         super();
         // TODO Auto-generated constructor stub
     }
+    
+    @Override
+    
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		
-		Analysis adapterAnalysis = new Analysis();
+		this.adapterAnalysis = new Analysis();
 		UIModels uimodels = new UIModels();
 		
 //		Canvas canvas = new Canvas(500, 500);
@@ -77,8 +83,29 @@ public class InitController extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//doGet(request, response);
+		Gson gson = new Gson();
+		String jsonCreated;
+		String jsonDeleted;
+		List<Circle> createdItems = null;
+		List<Circle> deletedItems = null;
+		
+		if (request.getParameter("loadProds") != null) {
+			
+				jsonCreated = request.getParameter("ItemsCreated");
+				jsonDeleted = request.getParameter("ItemsDeleted");
+				createdItems = gson.fromJson(jsonCreated, new TypeToken<List<Circle>>(){}.getType());
+				deletedItems = gson.fromJson(jsonDeleted, new TypeToken<List<Circle>>(){}.getType());
+			}
+		
+		Change change = new Change();
+	    change.setCreated(createdItems);
+	    System.out.println(createdItems.get(0).getPosX());
+		
+	    UIModels uimodels = new UIModels();
+		uimodels = this.adapterAnalysis.getUIModelsAfterChange(change);
+		
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().println( new Gson().toJson(uimodels));	
 	}
 
 }

@@ -39,7 +39,7 @@ Y: <input type="text" id="cursory" class="input-box" placeholder="Click on canva
 
 <div style="width:100%;height:100%;position:absolute;vertical-align:middle;text-align:center;">
     <button type="submit" style="margin-left:30%;margin-right:auto;display:block;margin-top:2%;margin-bottom:0%"
-    onClick="synchroTransform()">Synchronize</button> 
+    onClick="sychro()">Synchronize</button> 
     <button type="submit" style="margin-left:30%;margin-right:auto;display:block;margin-top:2%;margin-bottom:0%"
     onClick="createProg()">Create Object</button>
 </div>​

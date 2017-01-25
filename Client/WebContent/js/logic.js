@@ -9,6 +9,8 @@ var x = 512;
 var y = 12;
 var Layout = new fabric.Canvas('canvas');
 var Workspace= new fabric.Canvas('canvas1');
+var KitItemsCreated= [];
+var KitItemsDeleted= [];
 
 window.onload = init;
 
@@ -77,13 +79,14 @@ function drawGrid(noofgrid){
 	        Layout.add(r);
 	    }
 	}
-	$("#grid_btn").disabled = false;
-	$("#arrayNumber").attr("disabled", "disabled");
+//	$("#grid_btn").disabled = false;
+//	$("#arrayNumber").attr("disabled", "disabled");
 }
 
 function addObject() {
-	var object= $("#objectSelect").val();
-	Workspace.add(new fabric.Circle({ radius: 10, fill: '#f55', left:x-510, top:y-10, id: object+"_"+ object_counter }));
+	var objectType= $("#objectSelect").val();
+	Workspace.add(new fabric.Circle({ radius: 10, fill: '#f55', left:x-510, top:y-10, id: objectType+"_"+ object_counter }));
+	KitItemsCreated.push({ id: objectType+"_"+ object_counter, type: objectType, posX: x-510, posY: y-10 });
 	object_counter++;
 }
 
@@ -93,6 +96,22 @@ function showInfo(val) {
 
 function deleteObject() {
     Workspace.getActiveObject().remove();
+}
+
+function sychro(){
+	$.ajax({
+        url: 'InitController',
+        type: 'POST',
+        dataType: 'json',
+        data: { 
+            loadProds: 1,
+            ItemsCreated: JSON.stringify(KitItemsCreated),
+            ItemsDeleted: JSON.stringify(KitItemsDeleted)
+          },
+        success: function(data){
+            console.log(data);
+        }
+         });
 }
 
 function synchroTransform() {
@@ -167,6 +186,7 @@ Workspace.on('object:added', function(e) {
 Workspace.on('object:removed', function(e) {
     if(e.target!= null) {
     	console.log(e.target.id + " deleted");
+    	 KitItemsDeleted.push({ id: e.target.id});
     } 
  });
  

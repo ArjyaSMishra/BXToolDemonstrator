@@ -5,6 +5,8 @@ import java.util.Map;
 
 public abstract class Delta {
 	
-	public Map<String, Circle> change;
+	private List<Change> delta;
+	
+	
 
 }

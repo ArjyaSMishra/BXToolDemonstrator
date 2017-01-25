@@ -42,7 +42,7 @@ public class AdapterObserver implements Observer{
 		
 		Analysis analysis = new Analysis();
 		UIModels uiModels = analysis.convertToUIModels(kitchen, grid);
-		analysis.setUIModels(uiModels.layout, uiModels.workspace);
+		//analysis.setUIModels(uiModels.layout, uiModels.workspace);
 		System.out.println("after analysis done inside observer"); 
 		
 	}
