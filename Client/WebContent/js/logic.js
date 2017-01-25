@@ -11,15 +11,22 @@ var Layout = new fabric.Canvas('canvas');
 var Workspace= new fabric.Canvas('canvas1');
 var KitItemsCreated= [];
 var KitItemsDeleted= [];
+var noOfBlocks;
 
 window.onload = init;
 
 function init(){
+	noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber").val();
 	$.ajax({
       url: 'InitController',
-      type: 'GET',
+      type: 'POST',
       dataType: 'json',
+      data: { 
+          initCanvas: 1,
+          blockArray: noOfBlocks
+        },
       success: function(data){
+    	console.log(data);
       	initVisualize(data);
       }
        });
@@ -29,7 +36,7 @@ function initVisualize(uiModels){
 	Layout.setDimensions({width:uiModels.layout.width, height:uiModels.layout.height});
   	Workspace.setDimensions({width:uiModels.workspace.width, height:uiModels.workspace.width});
   	
-  	drawGrid(5);
+  	drawGrid();
 }
 
 function changeVisualize(uiModels){
@@ -37,9 +44,14 @@ function changeVisualize(uiModels){
   	Workspace.setDimensions({width:uiModels.workspace.width, height:uiModels.workspace.width});
 }
 
-function drawGrid(noofgrid){
-	var noOfBlocks = noofgrid;
-	//var noOfBlocks = $("#arrayNumber").val();
+function reInit(){
+	init();
+	drawGrid();
+}
+
+function drawGrid(){
+	Layout.clear();
+	var noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber").val();
 	var blockHeight = Layout.height/noOfBlocks;
 	var blockWidth = Layout.width/noOfBlocks;
 	for (var i = 0; i < noOfBlocks; i++) {
@@ -104,7 +116,7 @@ function sychro(){
         type: 'POST',
         dataType: 'json',
         data: { 
-            loadProds: 1,
+            loadChanges: 1,
             ItemsCreated: JSON.stringify(KitItemsCreated),
             ItemsDeleted: JSON.stringify(KitItemsDeleted)
           },

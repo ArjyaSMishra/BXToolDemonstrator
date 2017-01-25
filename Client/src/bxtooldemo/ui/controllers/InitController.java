@@ -32,6 +32,7 @@ import bxtooldemo.ui.core.ClientObservable;
 public class InitController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Analysis adapterAnalysis;
+	private UIModels uimodels;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -50,19 +51,18 @@ public class InitController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		this.adapterAnalysis = new Analysis();
-		UIModels uimodels = new UIModels();
 		
 //		Canvas canvas = new Canvas(500, 500);
 //        ClientObservable clientObser = new ClientObservable();
 //        createObserver().ifPresent(o -> clientObser.attach(o));
 //		clientObser.setCanvas(canvas);
 		
-		uimodels = adapterAnalysis.getUIModels();
+		this.uimodels = adapterAnalysis.getUIModels();
 		   //ServletOutputStream outputStream = response.getOutputStream();
 	    	//outputStream.print(new Gson().toJson(w1.objects));
 	    	 
 		   response.setContentType("application/json;charset=UTF-8");
-		   response.getWriter().println( new Gson().toJson(uimodels));	
+		   response.getWriter().println( new Gson().toJson(this.uimodels));	
 	}
 
 	private Optional<Observer> createObserver() {
@@ -84,28 +84,50 @@ public class InitController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Gson gson = new Gson();
+		
+		if (request.getParameter("initCanvas") != null) {
+			
+			init(request, response, gson);
+		}
+		
+		if (request.getParameter("loadChanges") != null) {
+			
+			propagateChanges(request, response, gson);
+		}
+		
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().println( new Gson().toJson(this.uimodels));	
+	}
+	
+	public void init(HttpServletRequest request, HttpServletResponse response, Gson gson){
+		
+		String gridSize;
+		gridSize = request.getParameter("blockArray");
+		System.out.println(gridSize);
+		this.adapterAnalysis = new Analysis();
+		
+		this.uimodels = adapterAnalysis.getUIModels();
+		
+	}
+	
+    public void propagateChanges(HttpServletRequest request, HttpServletResponse response, Gson gson){
+		
 		String jsonCreated;
 		String jsonDeleted;
 		List<Circle> createdItems = null;
 		List<Circle> deletedItems = null;
 		
-		if (request.getParameter("loadProds") != null) {
-			
-				jsonCreated = request.getParameter("ItemsCreated");
-				jsonDeleted = request.getParameter("ItemsDeleted");
-				createdItems = gson.fromJson(jsonCreated, new TypeToken<List<Circle>>(){}.getType());
-				deletedItems = gson.fromJson(jsonDeleted, new TypeToken<List<Circle>>(){}.getType());
-			}
+		jsonCreated = request.getParameter("ItemsCreated");
+		jsonDeleted = request.getParameter("ItemsDeleted");
+		createdItems = gson.fromJson(jsonCreated, new TypeToken<List<Circle>>(){}.getType());
+		deletedItems = gson.fromJson(jsonDeleted, new TypeToken<List<Circle>>(){}.getType());
 		
 		Change change = new Change();
 	    change.setCreated(createdItems);
 	    System.out.println(createdItems.get(0).getPosX());
 		
-	    UIModels uimodels = new UIModels();
-		uimodels = this.adapterAnalysis.getUIModelsAfterChange(change);
+		this.uimodels = this.adapterAnalysis.getUIModelsAfterChange(change);
 		
-		response.setContentType("application/json;charset=UTF-8");
-		response.getWriter().println( new Gson().toJson(uimodels));	
 	}
 
 }

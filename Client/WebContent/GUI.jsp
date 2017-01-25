@@ -16,7 +16,7 @@
 <tr>
 <td><canvas id="canvas" width="500" height="500" style="border:1px solid #000000"></canvas>
 Desired no of Blocks: <input type="text" id="arrayNumber" class="input-box" placeholder="Enter a number" />
-<button onclick="drawGrid()" id="grid_btn">
+<button onclick="reInit()" id="grid_btn">
 Create Grid
 </button>
 </td>
