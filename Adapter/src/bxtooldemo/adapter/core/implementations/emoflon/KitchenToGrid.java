@@ -67,6 +67,7 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 	}
 
 	private Grid initialiseGrid() {
+		//initialize grid with block structure
 		Grid gridRoot = GridLanguageFactory.eINSTANCE.createGrid();
 		int noOfBlocks = Analysis.blockArrayNo;
 		gridRoot.setBlockSize((double)500/noOfBlocks);
@@ -148,7 +149,7 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 
 	@Override
 	public void performAndPropagateTargetEdit(Consumer<Kitchen> edit) {
-		
+		//helper.setVerbose(true);
 		helper.setChangeTrg((EObject root) ->  edit.accept((Kitchen) root));
 		helper.integrateBackward();
 		

@@ -1,21 +1,37 @@
 package bxtooldemo.adapter.uimodels;
 
+import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+
 
 /**
  * @author Arjya Shankar Mishra
  *
  */
-public class Group {
+public class UIGroup {
 	
-	private List<Rectangle> blocks;
-	private String fillColor;
+	public List<Rectangle> blocks;
+	public String fillColor;
+	
+	public UIGroup(){
+		this.blocks = new ArrayList<Rectangle>();
+	}
+
+	
+//	public UIGroup(){
+//		Random rand = new Random();
+//		Color color = new Color(rand.nextInt(0xFFFFFF));
+//		System.out.println(color.toString());
+//	}
 
 	/**
 	 * @return the blocks
 	 */
 	public List<Rectangle> getBlocks() {
-		return blocks;
+		return this.blocks;
 	}
 
 	/**
@@ -29,7 +45,7 @@ public class Group {
 	 * @return the fillColor
 	 */
 	public String getFillColor() {
-		return fillColor;
+		return this.fillColor;
 	}
 
 	/**

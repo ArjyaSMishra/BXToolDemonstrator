@@ -1,5 +1,6 @@
 package bxtooldemo.adapter.uimodels;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,12 +9,14 @@ import java.util.List;
  */
 public class Layout extends Canvas {
 	
-	private double gridSize;
-	private List<Rectangle> blocks;
-	private List<Group> groups;
+	public double gridSize;
+	public List<Rectangle> blocks ;
+	public List<UIGroup> groups;
 	
 	public Layout(){
 		super(500, 500);
+		this.blocks = new ArrayList<Rectangle>();
+		this.groups = new ArrayList<UIGroup>();
 	}
 
 	/**
@@ -34,7 +37,7 @@ public class Layout extends Canvas {
 	 * @return the blocks
 	 */
 	public List<Rectangle> getBlocks() {
-		return blocks;
+		return this.blocks;
 	}
 
 	/**
@@ -47,14 +50,14 @@ public class Layout extends Canvas {
 	/**
 	 * @return the groups
 	 */
-	public List<Group> getGroups() {
-		return groups;
+	public List<UIGroup> getGroups() {
+		return this.groups;
 	}
 
 	/**
 	 * @param groups the groups to set
 	 */
-	public void setGroups(List<Group> groups) {
+	public void setGroups(List<UIGroup> groups) {
 		this.groups = groups;
 	}
 

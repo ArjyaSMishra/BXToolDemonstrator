@@ -132,9 +132,10 @@ public class InitController extends HttpServlet {
 		
 		Change change = new Change();
 	    change.setCreated(createdItems);
-	    System.out.println(createdItems.get(0).getPosX());
-	    System.out.println("analysis: "+ this.adapterAnalysis);
+	    change.setDeleted(deletedItems);
+
 		this.uimodels = this.adapterAnalysis.getUIModelsAfterChange(change);
+		System.out.println("UIModels layout grps at gui: "+ this.uimodels.getLayout().getGroups().size());
 		
 	}
 
