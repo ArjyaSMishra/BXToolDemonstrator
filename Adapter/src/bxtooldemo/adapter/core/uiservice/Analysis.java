@@ -24,14 +24,23 @@ public class Analysis{
 	private Kitchen kitchen;
 	private Grid grid;
 	private UIModels uiModelsAdapter;
+	public static int blockArrayNo;
+	
+	public void initMoflonTool(int blockArrayNo){
+		
+		this.kitchenToGrid = new KitchenToGrid();
+		Analysis.blockArrayNo = blockArrayNo;
+		this.kitchenToGrid.initiateSynchronisationDialogue();
+	}
 	
 	public UIModels getUIModels() {
 		
-		this.kitchenToGrid = new KitchenToGrid(5);
-		this.kitchenToGrid.initiateSynchronisationDialogue();
+		this.grid = this.kitchenToGrid.getSourceModel();
+		this.kitchen = this.kitchenToGrid.getTargetModel();
 		
-		this.grid = kitchenToGrid.getSourceModel();
-		this.kitchen = kitchenToGrid.getTargetModel();
+		System.out.println(this.kitchen);
+		System.out.println(this.grid);
+		System.out.println(this.grid.getBlockSize());
 		
 		this.uiModelsAdapter = convertToUIModels(this.kitchen, this.grid);
 		
@@ -74,18 +83,18 @@ public class Analysis{
 	}
     
     public UIModels getUIModelsAfterChange(Change change) {
-    	System.out.println("inside getUIModelsAfterChange");
-    	//this.kitchenToGrid = new KitchenToGrid(5);
-    	//this.kitchenToGrid.initiateSynchronisationDialogue();
+    	
     	this.kitchenToGrid.performAndPropagateTargetEdit(convertDeltaToEdit(change));
     	
-    	this.grid = kitchenToGrid.getSourceModel();
-		this.kitchen = kitchenToGrid.getTargetModel();
+    	this.grid = this.kitchenToGrid.getSourceModel();
+		this.kitchen = this.kitchenToGrid.getTargetModel();
 		
 		System.out.println(this.kitchen);
 		System.out.println(this.grid);
-		System.out.println(kitchenToGrid.getSourceModel().getBlocks().size());
-		System.out.println(kitchenToGrid.getSourceModel().getGroups().size());
+		
+		System.out.println(this.kitchenToGrid.getSourceModel().getBlockSize());
+		System.out.println(this.kitchenToGrid.getSourceModel().getBlocks().size());
+		System.out.println(this.kitchenToGrid.getSourceModel().getGroups().size());
 		
         this.uiModelsAdapter = convertToUIModels(this.kitchen, this.grid);
 		

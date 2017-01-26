@@ -17,6 +17,7 @@ import GridLanguage.Grid;
 import GridLanguage.GridLanguageFactory;
 import KitchenLanguage.Kitchen;
 import KitchenToGridLanguage.KitchenToGridLanguagePackage;
+import bxtooldemo.adapter.core.uiservice.Analysis;
 import bxtooldemo.adapter.models.Decisions;
 
 public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
@@ -25,7 +26,7 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 		super(src, trg);
 	}
 	
-	public KitchenToGrid(int noofGrid) {
+	public KitchenToGrid() {
 		super(null, null);
 	}
 	
@@ -67,12 +68,13 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 
 	private Grid initialiseGrid() {
 		Grid gridRoot = GridLanguageFactory.eINSTANCE.createGrid();
-		gridRoot.setBlockSize(100);
+		int noOfBlocks = Analysis.blockArrayNo;
+		gridRoot.setBlockSize((double)500/noOfBlocks);
 		
 		Block topLeft = createTopLeft(gridRoot);
-		createFirstRow(gridRoot, topLeft, 5);
-		createFirstCol(gridRoot, topLeft, 5);
-		createInternalBlocks(gridRoot, topLeft, 5);
+		createFirstRow(gridRoot, topLeft, noOfBlocks);
+		createFirstCol(gridRoot, topLeft, noOfBlocks);
+		createInternalBlocks(gridRoot, topLeft, noOfBlocks);
 		
 		return gridRoot;
 	}

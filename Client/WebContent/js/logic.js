@@ -23,7 +23,7 @@ function init(){
       dataType: 'json',
       data: { 
           initCanvas: 1,
-          blockArray: noOfBlocks
+          blockArrayNo: noOfBlocks
         },
       success: function(data){
     	console.log(data);
@@ -51,6 +51,7 @@ function reInit(){
 
 function drawGrid(){
 	Layout.clear();
+	Workspace.clear();
 	var noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber").val();
 	var blockHeight = Layout.height/noOfBlocks;
 	var blockWidth = Layout.width/noOfBlocks;

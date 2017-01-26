@@ -28,7 +28,7 @@ public class AdapterObserver implements Observer{
 		// TODO Auto-generated method stub
 		
 		System.out.println("start update in observerbn");
-		KitchenToGrid kitchenToGrid = new KitchenToGrid(5);
+		KitchenToGrid kitchenToGrid = new KitchenToGrid();
 		System.out.println("inside update here 11");
 		kitchenToGrid.initiateSynchronisationDialogue();
 		System.out.println("inside update -- after init");

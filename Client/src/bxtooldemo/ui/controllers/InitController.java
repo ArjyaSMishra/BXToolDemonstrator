@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Observer;
 import java.util.Optional;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,8 +24,6 @@ import bxtooldemo.adapter.uimodels.Circle;
 import bxtooldemo.adapter.uimodels.UIModels;
 import bxtooldemo.ui.core.ClientObservable;
 
-
-
 /**
  * Servlet implementation class InitController
  */
@@ -39,25 +38,34 @@ public class InitController extends HttpServlet {
      */
     public InitController() {
         super();
-        // TODO Auto-generated constructor stub
+        this.adapterAnalysis = new Analysis();
     }
     
-    @Override
+    /**
+     * init() method is typically used to perform servlet initialization and guaranteed to be called before the servlet handles its first request.
+     */
     
-
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        
+//        this.adapterAnalysis = new Analysis();
+//        System.out.println("analysis: "+ this.adapterAnalysis );
+      }
+    
+    @Override
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		this.adapterAnalysis = new Analysis();
+		//this.adapterAnalysis = new Analysis();
 		
 //		Canvas canvas = new Canvas(500, 500);
 //        ClientObservable clientObser = new ClientObservable();
 //        createObserver().ifPresent(o -> clientObser.attach(o));
 //		clientObser.setCanvas(canvas);
 		
-		this.uimodels = adapterAnalysis.getUIModels();
+		this.uimodels = this.adapterAnalysis.getUIModels();
 		   //ServletOutputStream outputStream = response.getOutputStream();
 	    	//outputStream.print(new Gson().toJson(w1.objects));
 	    	 
@@ -79,6 +87,7 @@ public class InitController extends HttpServlet {
 		return Optional.empty();
 	}
 
+	@Override
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -101,12 +110,11 @@ public class InitController extends HttpServlet {
 	
 	public void init(HttpServletRequest request, HttpServletResponse response, Gson gson){
 		
-		String gridSize;
-		gridSize = request.getParameter("blockArray");
-		System.out.println(gridSize);
-		this.adapterAnalysis = new Analysis();
-		
-		this.uimodels = adapterAnalysis.getUIModels();
+		int blockArrayNo;
+		blockArrayNo = gson.fromJson(request.getParameter("blockArrayNo"), int.class);
+		//this.adapterAnalysis = new Analysis();
+		this.adapterAnalysis.initMoflonTool(blockArrayNo);
+		this.uimodels = this.adapterAnalysis.getUIModels();
 		
 	}
 	
@@ -125,7 +133,7 @@ public class InitController extends HttpServlet {
 		Change change = new Change();
 	    change.setCreated(createdItems);
 	    System.out.println(createdItems.get(0).getPosX());
-		
+	    System.out.println("analysis: "+ this.adapterAnalysis);
 		this.uimodels = this.adapterAnalysis.getUIModelsAfterChange(change);
 		
 	}
