@@ -1,6 +1,8 @@
 package bxtooldemo.adapter.core.implementations.emoflon;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.function.Consumer;
 
 import org.apache.log4j.BasicConfigurator;
@@ -41,12 +43,13 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 	public void initiateSynchronisationDialogue() {
 		
 		BasicConfigurator.configure();
-		System.out.println(new File("KitchenToGridLanguage").getAbsolutePath());
 		helper = new SynchronizationHelper(KitchenToGridLanguagePackage.eINSTANCE, "C:/Users/Arjya Shankar Mishra/git/eMoflon-Rules/KitchenToGridLanguage");
 		
 		//for accessing jar
+//		URL location = KitchenToGridLanguagePackage.class.getProtectionDomain().getCodeSource().getLocation();
+//		System.out.println(location);
 //		helper = new SynchronizationHelper();
-//		helper.loadRulesFromJarArchive("", "");
+//    	helper.loadRulesFromJarArchive(location.toString(), "/KitchenToGridLanguage.sma.xmi");
 		
 		Resource r = helper.getResourceSet().createResource(URI.createURI("sourceModel"));
 		//helper.setVerbose(true);
