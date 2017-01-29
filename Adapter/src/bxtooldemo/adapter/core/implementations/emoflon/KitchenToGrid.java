@@ -52,7 +52,7 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 //    	helper.loadRulesFromJarArchive(location.toString(), "/KitchenToGridLanguage.sma.xmi");
 		
 		Resource r = helper.getResourceSet().createResource(URI.createURI("sourceModel"));
-		//helper.setVerbose(true);
+		
 		Grid gridRoot = initialiseGrid();
 		r.getContents().add(gridRoot);
 		
@@ -152,7 +152,7 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 
 	@Override
 	public void performAndPropagateTargetEdit(Consumer<Kitchen> edit) {
-		//helper.setVerbose(true);
+		
 		helper.setChangeTrg((EObject root) ->  edit.accept((Kitchen) root));
 		helper.integrateBackward();
 		

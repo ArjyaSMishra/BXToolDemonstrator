@@ -30,7 +30,7 @@ public class Analysis {
 	private UIModels uiModelsAdapter;
 	public static int blockArrayNo;
 
-	public void initMoflonTool(int blockArrayNo) {
+	public void initeMoflonTool(int blockArrayNo) {
 
 		this.kitchenToGrid = new KitchenToGrid();
 		Analysis.blockArrayNo = blockArrayNo;
@@ -38,9 +38,6 @@ public class Analysis {
 	}
 
 	public UIModels getUIModels() {
-
-		// this.grid = this.kitchenToGrid.getSourceModel();
-		// this.kitchen = this.kitchenToGrid.getTargetModel();
 
 		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(),
 				this.kitchenToGrid.getSourceModel());
@@ -63,7 +60,7 @@ public class Analysis {
 				uiGroup = new UIGroup();
 				for (Block block : group.getOccupies()) {
 					rect = new Rectangle();
-					rect.setId("button_"+block.getXIndex()+"_"+block.getYIndex());
+					rect.setId("block_"+block.getXIndex()+"_"+block.getYIndex());
 					uiGroup.getBlocks().add(rect);
 				}
 				layoutAdapter.getGroups().add(uiGroup);
@@ -72,6 +69,7 @@ public class Analysis {
 		
 		// workspace conversion
 		workspaceAdapter.setWidth((int) kitchen.getXSize());
+		workspaceAdapter.setHeight((int) kitchen.getYSize());
 
 		// setting the UIModels
 		uiModelAdapter.setLayout(layoutAdapter);
@@ -113,15 +111,12 @@ public class Analysis {
 
 		this.kitchenToGrid.performAndPropagateTargetEdit(convertDeltaToEdit(change));
 
-		this.grid = this.kitchenToGrid.getSourceModel();
-		this.kitchen = this.kitchenToGrid.getTargetModel();
-
 		System.out.println("blocksie: " + this.kitchenToGrid.getSourceModel().getBlockSize());
 		System.out.println("noofblocks: " + this.kitchenToGrid.getSourceModel().getBlocks().size());
 		System.out.println("noofgroups: " + this.kitchenToGrid.getSourceModel().getGroups().size());
 		System.out.println("noofitems: " + this.kitchenToGrid.getTargetModel().getItems().size());
 
-		this.uiModelsAdapter = convertToUIModels(this.kitchen, this.grid);
+		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel());
 
 		return this.uiModelsAdapter;
 	}

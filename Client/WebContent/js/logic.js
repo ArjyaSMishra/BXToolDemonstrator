@@ -8,13 +8,15 @@ var object_counter;
 var noOfBlocks;
 var KitItemsCreated = [];
 var KitItemsDeleted = [];
-var x = 512;
-var y = 12;
+var x = 510;
+var y = 10;
 
 window.onload = init;
 
 function init() {
 	object_counter = 0;
+	KitItemsCreated.length = 0;
+	KitItemsDeleted.length = 0;
 	noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber").val();
 	$.ajax({
 		url : 'InitController',
@@ -39,6 +41,17 @@ function reInit() {
 }
 
 function sychro() {
+	if(KitItemsCreated.length <= 0 && KitItemsDeleted.length <= 0){
+		$('#messageDialog').text("Nothing to propagate. Please Make some changes for the synchronization to happen.");
+	}
+	else{
+		$('#messageDialog').text("");
+		propagateChanges();
+	}
+	
+}
+
+function propagateChanges(){
 	$.ajax({
 		url : 'InitController',
 		type : 'POST',
@@ -76,15 +89,18 @@ function changeVisualize(uiModels) {
 	Layout.clear();
 	drawGrid();
 
-	console.log("Layout noofblocks: "+Layout.getObjects().length);
-	for (var i = 0; i < uiModels.layout.groups.length; i++) {
-		for (var j = 0; j < uiModels.layout.groups[i].blocks.length; j++) {
-			for (var k = 0; k < Layout.getObjects().length; k++) {
-				if (Layout.getObjects()[k].get('id') === uiModels.layout.groups[i].blocks[j].id) {
-					Layout.getObjects()[k].setFill('#ffff00');
-					Layout.renderAll();
-				}
+	console.log("Layout noofblocks: " + Layout.getObjects().length);
+	if (uiModels!= null && uiModels.layout.groups.length > 0) {
+		// blocks for groups
+		for (var i = 0; i < uiModels.layout.groups.length; i++) {
+			for (var j = 0; j < uiModels.layout.groups[i].blocks.length; j++) {
+				for (var k = 0; k < Layout.getObjects().length; k++) {
+					if (Layout.getObjects()[k].get('id') === uiModels.layout.groups[i].blocks[j].id) {
+						Layout.getObjects()[k].setFill(uiModels.layout.groups[i].fillColor);
+						Layout.renderAll();
+					}
 
+				}
 			}
 		}
 	}
@@ -124,8 +140,8 @@ function drawGrid() {
 				lockMovementX : true,
 				lockMovementY : true,
 				borderColor : 'transparent',
-				subType : 'button',
-				id : 'button_' + i + '_' + j
+				subType : 'block',
+				id : 'block_' + i + '_' + j
 			};
 			//var c = new fabric.Rect(gOptions);
 			var r = new fabric.Rect(rOptions);
@@ -145,6 +161,7 @@ function addObject() {
 		fill : '#f55',
 		left : x - 510,
 		top : y - 10,
+		subType: objectType,
 		id : objectType + "_" + object_counter
 	}));
 	KitItemsCreated.push({
@@ -154,44 +171,36 @@ function addObject() {
 		posY : y - 10
 	});
 	object_counter++;
+	
+	console.log("created len "+ KitItemsCreated.length );
+	console.log("deleted len "+ KitItemsDeleted.length);
+}
+
+function deleteObject() {
+	var itemCreated = false;
+	if(KitItemsCreated.length > 0){
+		for(var i = 0; i < KitItemsCreated.length; i++) {
+		    if(KitItemsCreated[i].id == Workspace.getActiveObject().id) {
+		    	KitItemsCreated.splice(i, 1);
+		    	itemCreated = true;
+		        break;
+		    }
+		}
+	}
+	if(!itemCreated){
+		KitItemsDeleted.push({
+			id : Workspace.getActiveObject().id,
+			type : Workspace.getActiveObject().subType
+		});
+	}
+	
+	Workspace.getActiveObject().remove();
+	console.log("created len "+ KitItemsCreated.length );
+	console.log("deleted len "+ KitItemsDeleted.length);
 }
 
 function showInfo(val) {
 	$('#messageDialog').text(val);
-}
-
-function deleteObject() {
-	Workspace.getActiveObject().remove();
-}
-
-function synchroTransform() {
-
-	var jsonObj = {
-		id : Workspace.getObjects()[0].get('id'),
-		posX : Workspace.getObjects()[0].get('left'),
-		posY : Workspace.getObjects()[0].get('top'),
-		fillColor : Workspace.getObjects()[0].get('fill')
-	}
-
-	$.ajax({
-		url : 'PilotController',
-		type : 'POST',
-		dataType : 'json',
-		data : {
-			loadProds : 1,
-			jsonData : JSON.stringify(jsonObj)
-		},
-		success : function(data) {
-			for (var i = 0; i < Layout.getObjects().length; i++) {
-				if (Layout.getObjects()[i].get('id') === data.id) {
-					Layout.getObjects()[i].setFill(data.fillColor);
-					Layout.renderAll();
-				}
-
-			}
-		}
-	});
-	//console.log(JSON.stringify(canvas));
 }
 
 Layout.hoverCursor = 'pointer';
@@ -228,9 +237,6 @@ Workspace.on('object:added', function(e) {
 Workspace.on('object:removed', function(e) {
 	if (e.target != null) {
 		console.log(e.target.id + " deleted");
-		KitItemsDeleted.push({
-			id : e.target.id
-		});
 	}
 });
 
@@ -239,9 +245,9 @@ Workspace.on('object:moving', function(e) {
 });
 
 Layout.on('mouse:down', function(e) {
-	if (e.target.get('subType') == 'button') {
+	if (e.target.get('subType') == 'block') {
 
-		console.log('button ' + e.target.id + ' was clicked');
+		console.log('block ' + e.target.id + ' was clicked');
 		var currentColor = e.target.fill;
 
 		e.target.setFill("#cc0000");
