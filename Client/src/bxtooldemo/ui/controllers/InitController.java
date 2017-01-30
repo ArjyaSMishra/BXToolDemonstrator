@@ -87,20 +87,24 @@ public class InitController extends HttpServlet {
 		
 		String jsonCreated;
 		String jsonDeleted;
+		String jsonMoved;
 		List<Circle> createdItems = null;
 		List<Circle> deletedItems = null;
+		List<Circle> movedItems = null;
 		
 		jsonCreated = request.getParameter("ItemsCreated");
 		jsonDeleted = request.getParameter("ItemsDeleted");
+		jsonMoved = request.getParameter("ItemsMoved");
 		createdItems = gson.fromJson(jsonCreated, new TypeToken<List<Circle>>(){}.getType());
 		deletedItems = gson.fromJson(jsonDeleted, new TypeToken<List<Circle>>(){}.getType());
+		movedItems = gson.fromJson(jsonMoved, new TypeToken<List<Circle>>(){}.getType());
 		
 		Change change = new Change();
 	    change.setCreated(createdItems);
 	    change.setDeleted(deletedItems);
+	    change.setMoved(movedItems);
 
 		this.uimodels = this.adapterAnalysis.getUIModelsAfterChange(change);
-		System.out.println("UIModels layout grps at gui: "+ this.uimodels.getLayout().getGroups().size());
 		
 	}
 

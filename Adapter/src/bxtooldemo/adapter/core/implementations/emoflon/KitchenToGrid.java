@@ -1,7 +1,5 @@
 package bxtooldemo.adapter.core.implementations.emoflon;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
 
@@ -43,14 +41,13 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 	public void initiateSynchronisationDialogue() {
 		
 		BasicConfigurator.configure();
-		helper = new SynchronizationHelper(KitchenToGridLanguagePackage.eINSTANCE, "C:/Users/Arjya Shankar Mishra/git/eMoflon-Rules/KitchenToGridLanguage");
+		//for accessing local System Path
+		//helper = new SynchronizationHelper(KitchenToGridLanguagePackage.eINSTANCE, "C:/Users/Arjya Shankar Mishra/git/eMoflon-Rules/KitchenToGridLanguage");
 		
 		//for accessing jar
-//		URL location = KitchenToGridLanguagePackage.class.getProtectionDomain().getCodeSource().getLocation();
-//		System.out.println(location);
-//		helper = new SynchronizationHelper();
-//    	helper.loadRulesFromJarArchive(location.toString(), "/KitchenToGridLanguage.sma.xmi");
-		
+		URL location = KitchenToGridLanguagePackage.class.getProtectionDomain().getCodeSource().getLocation();
+		helper = new KitchenToGridSynchronizationHelper(location.getFile());
+
 		Resource r = helper.getResourceSet().createResource(URI.createURI("sourceModel"));
 		
 		Grid gridRoot = initialiseGrid();
@@ -88,7 +85,6 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 		block.setXIndex(0);
 		block.setYIndex(0);
 		gridRoot.getBlocks().add(block);
-		System.out.println("block_"+block.getXIndex()+"_"+block.getYIndex());
 		
 		return block;
 	}
@@ -103,7 +99,6 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 			gridRoot.getBlocks().add(block);
 			
 			west = block;
-			System.out.println("block_"+block.getXIndex()+"_"+block.getYIndex());
 		}
 	}
 	
@@ -117,7 +112,6 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 			gridRoot.getBlocks().add(block);
 			
 			north = block;
-			System.out.println("block_"+block.getXIndex()+"_"+block.getYIndex());
 		}
 	}
 	
@@ -139,7 +133,6 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 				northwest = north;
 				north = northwest.getE();
 				west = block;
-				System.out.println("block_"+block.getXIndex()+"_"+block.getYIndex());
 			}
 			
 				topLeft = topLeft.getS();
@@ -152,7 +145,7 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 
 	@Override
 	public void performAndPropagateTargetEdit(Consumer<Kitchen> edit) {
-		
+		helper.setVerbose(true);
 		helper.setChangeTrg((EObject root) ->  edit.accept((Kitchen) root));
 		helper.integrateBackward();
 		

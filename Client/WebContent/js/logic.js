@@ -8,6 +8,7 @@ var object_counter;
 var noOfBlocks;
 var KitItemsCreated = [];
 var KitItemsDeleted = [];
+var KitItemsMoved = [];
 var x = 510;
 var y = 10;
 
@@ -17,6 +18,7 @@ function init() {
 	object_counter = 0;
 	KitItemsCreated.length = 0;
 	KitItemsDeleted.length = 0;
+	KitItemsMoved.length = 0;
 	noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber").val();
 	$.ajax({
 		url : 'InitController',
@@ -27,7 +29,6 @@ function init() {
 			blockArrayNo : noOfBlocks
 		},
 		success : function(data) {
-			console.log(data);
 			initVisualize(data);
 		}
 	});
@@ -41,7 +42,7 @@ function reInit() {
 }
 
 function sychro() {
-	if(KitItemsCreated.length <= 0 && KitItemsDeleted.length <= 0){
+	if(KitItemsCreated.length <= 0 && KitItemsDeleted.length <= 0 && KitItemsMoved.length <= 0){
 		$('#messageDialog').text("Nothing to propagate. Please Make some changes for the synchronization to happen.");
 	}
 	else{
@@ -59,16 +60,17 @@ function propagateChanges(){
 		data : {
 			loadChanges : 1,
 			ItemsCreated : JSON.stringify(KitItemsCreated),
-			ItemsDeleted : JSON.stringify(KitItemsDeleted)
+			ItemsDeleted : JSON.stringify(KitItemsDeleted),
+			ItemsMoved : JSON.stringify(KitItemsMoved),
 		},
 		success : function(data) {
-			console.log(data);
 			changeVisualize(data)
 		}
 	});
 
 	KitItemsCreated.length = 0;
 	KitItemsDeleted.length = 0;
+	KitItemsMoved.length = 0;
 }
 
 function initVisualize(uiModels) {
@@ -89,9 +91,8 @@ function changeVisualize(uiModels) {
 	Layout.clear();
 	drawGrid();
 
-	console.log("Layout noofblocks: " + Layout.getObjects().length);
 	if (uiModels!= null && uiModels.layout.groups.length > 0) {
-		// blocks for groups
+		// fillColor into blocks for groups
 		for (var i = 0; i < uiModels.layout.groups.length; i++) {
 			for (var j = 0; j < uiModels.layout.groups[i].blocks.length; j++) {
 				for (var k = 0; k < Layout.getObjects().length; k++) {
@@ -172,12 +173,26 @@ function addObject() {
 	});
 	object_counter++;
 	
-	console.log("created len "+ KitItemsCreated.length );
-	console.log("deleted len "+ KitItemsDeleted.length);
+	console.log("created array len "+ KitItemsCreated.length );
+	console.log("deleted array len "+ KitItemsDeleted.length);
+	console.log("moved array len "+ KitItemsMoved.length);
 }
 
 function deleteObject() {
+	
+	handleDelete();
+	Workspace.getActiveObject().remove();
+	
+	console.log("created array len "+ KitItemsCreated.length );
+	console.log("deleted array len "+ KitItemsDeleted.length);
+	console.log("moved array len "+ KitItemsMoved.length);
+}
+
+function handleDelete(){
 	var itemCreated = false;
+	var itemMoved = false;
+	
+	//Check the item in Created array
 	if(KitItemsCreated.length > 0){
 		for(var i = 0; i < KitItemsCreated.length; i++) {
 		    if(KitItemsCreated[i].id == Workspace.getActiveObject().id) {
@@ -187,16 +202,62 @@ function deleteObject() {
 		    }
 		}
 	}
-	if(!itemCreated){
+	
+	//Check the item in Moved array
+	if(KitItemsMoved.length > 0){
+		for(var i = 0; i < KitItemsMoved.length; i++) {
+		    if(KitItemsMoved[i].id == Workspace.getActiveObject().id) {
+		    	KitItemsMoved.splice(i, 1);
+		    	itemMoved = true;
+		        break;
+		    }
+		}
+	}
+	
+	if(!itemCreated && !itemMoved){
 		KitItemsDeleted.push({
 			id : Workspace.getActiveObject().id,
 			type : Workspace.getActiveObject().subType
 		});
 	}
+}
+
+function handleMove(){
+	var itemCreated = false;
+	var itemMoved = false;
 	
-	Workspace.getActiveObject().remove();
-	console.log("created len "+ KitItemsCreated.length );
-	console.log("deleted len "+ KitItemsDeleted.length);
+	//Check the item in Created array
+	if(KitItemsCreated.length > 0){
+		for(var i = 0; i < KitItemsCreated.length; i++) {
+		    if(KitItemsCreated[i].id == Workspace.getActiveObject().id) {
+		    	KitItemsCreated[i].posX = Math.ceil(Workspace.getActiveObject().left);
+		    	KitItemsCreated[i].posY = Math.ceil(Workspace.getActiveObject().top);
+		    	itemCreated = true;
+		        break;
+		    }
+		}
+	}
+	
+	//Check the item in Moved array
+	if(KitItemsMoved.length > 0){
+		for(var i = 0; i < KitItemsMoved.length; i++) {
+		    if(KitItemsMoved[i].id == Workspace.getActiveObject().id) {
+		    	KitItemsMoved[i].posX = Math.ceil(Workspace.getActiveObject().left);
+		    	KitItemsMoved[i].posY = Math.ceil(Workspace.getActiveObject().top);
+		    	itemMoved = true;
+		        break;
+		    }
+		}
+	}
+	
+	if(!itemCreated && !itemMoved){
+		KitItemsMoved.push({
+			id : Workspace.getActiveObject().id,
+			type : Workspace.getActiveObject().subType,
+			posX : Math.ceil(Workspace.getActiveObject().left),
+			posY : Math.ceil(Workspace.getActiveObject().top)
+		});
+	}
 }
 
 function showInfo(val) {
@@ -240,8 +301,15 @@ Workspace.on('object:removed', function(e) {
 	}
 });
 
-Workspace.on('object:moving', function(e) {
-	console.log("object moved to Y: " + e.e.clientY);
+Workspace.on('object:modified', function(e) {
+	handleMove();
+	console.log(e.target);
+	console.log(Workspace.getActiveObject());
+	
+	console.log("created len "+ KitItemsCreated.length );
+	console.log("deleted len "+ KitItemsDeleted.length);
+	console.log("moved len "+ KitItemsMoved.length);
+	
 });
 
 Layout.on('mouse:down', function(e) {

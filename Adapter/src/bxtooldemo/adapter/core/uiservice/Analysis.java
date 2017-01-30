@@ -12,7 +12,6 @@ import KitchenLanguage.Item;
 import KitchenLanguage.Kitchen;
 import KitchenLanguage.KitchenLanguageFactory;
 import KitchenLanguage.KitchenLanguagePackage;
-import KitchenLanguage.Sink;
 import bxtooldemo.adapter.core.implementations.emoflon.KitchenToGrid;
 import bxtooldemo.adapter.uimodels.Change;
 import bxtooldemo.adapter.uimodels.Circle;
@@ -82,6 +81,7 @@ public class Analysis {
 		Consumer<Kitchen> edit = (kitchen) -> {
 		};
 
+		System.out.println("create list length before edit: " + change.getCreated().size());
 		if (change.getCreated() != null && change.getCreated().size() > 0) {
 			for (Circle circle : change.getCreated()) {
 				edit = edit.andThen((kitchen) -> {
@@ -91,15 +91,31 @@ public class Analysis {
 					item.setId(circle.getId());
 					item.setXPos(circle.getPosX());
 					item.setYPos(circle.getPosY());
+					System.out.println("item "+ item);
 					kitchen.getItems().add(item);
 				});
 			}
 		}
 
-		if (change.getDeleted() != null & change.getDeleted().size() > 0) {
+		System.out.println("delete list length before edit: " + change.getDeleted().size());
+		if (change.getDeleted() != null && change.getDeleted().size() > 0) {
 			for (Circle circle : change.getDeleted()) {
-				edit.andThen((kitchen) -> {
-
+				edit = edit.andThen((kitchen) -> {
+					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(circle.getId())).findFirst().orElse(null);
+					System.out.println("item "+ item);
+				    EcoreUtil.delete(item);
+				});
+			}
+		}
+		
+		System.out.println("moved list length before edit: " + change.getMoved().size());
+		if (change.getMoved() != null && change.getMoved().size() > 0) {
+			for (Circle circle : change.getMoved()) {
+				edit = edit.andThen((kitchen) -> {
+					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(circle.getId())).findFirst().orElse(null);
+					System.out.println("item "+ item);
+					item.setXPos(circle.getPosX());
+					item.setYPos(circle.getPosY());
 				});
 			}
 		}
@@ -111,10 +127,10 @@ public class Analysis {
 
 		this.kitchenToGrid.performAndPropagateTargetEdit(convertDeltaToEdit(change));
 
-		System.out.println("blocksie: " + this.kitchenToGrid.getSourceModel().getBlockSize());
-		System.out.println("noofblocks: " + this.kitchenToGrid.getSourceModel().getBlocks().size());
-		System.out.println("noofgroups: " + this.kitchenToGrid.getSourceModel().getGroups().size());
-		System.out.println("noofitems: " + this.kitchenToGrid.getTargetModel().getItems().size());
+		System.out.println("Grid blocksize: " + this.kitchenToGrid.getSourceModel().getBlockSize());
+		System.out.println("Grid noofblocks: " + this.kitchenToGrid.getSourceModel().getBlocks().size());
+		System.out.println("Grid noofgroups: " + this.kitchenToGrid.getSourceModel().getGroups().size());
+		System.out.println("Kitchen noofitems: " + this.kitchenToGrid.getTargetModel().getItems().size());
 
 		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel());
 
