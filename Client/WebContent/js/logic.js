@@ -84,6 +84,7 @@ function initVisualize(uiModels) {
 		height : uiModels.workspace.width
 	});
 	drawGrid();
+	console.log("Visualization done after initialization");
 }
 
 function changeVisualize(uiModels) {
@@ -105,6 +106,7 @@ function changeVisualize(uiModels) {
 			}
 		}
 	}
+	console.log("Visualization done after change propagation");
 
 }
 
