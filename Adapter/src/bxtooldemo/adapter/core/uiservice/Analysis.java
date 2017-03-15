@@ -51,6 +51,7 @@ public class Analysis {
 		UIModels uiModelAdapter = new UIModels();
 		UIGroup uiGroup;
 		Rectangle rect;
+		Circle circle;
 
 		// layout conversion
 		layoutAdapter.setGridSize(grid.getBlockSize());
@@ -69,6 +70,20 @@ public class Analysis {
 		// workspace conversion
 		workspaceAdapter.setWidth((int) kitchen.getXSize());
 		workspaceAdapter.setHeight((int) kitchen.getYSize());
+		
+		if (kitchen != null && kitchen.getItems().size() > 0) {
+			
+			for (Item item : kitchen.getItems()) {
+					circle = new Circle();
+					circle.setId(item.getId());
+					circle.setPosX(item.getXPos());
+					circle.setPosY(item.getYPos());
+					workspaceAdapter.getObjects().add(circle);
+			}
+			System.out.println("workspace adapter item size " + workspaceAdapter.getObjects().size());
+		}
+		
+		
 
 		// setting the UIModels
 		uiModelAdapter.setLayout(layoutAdapter);

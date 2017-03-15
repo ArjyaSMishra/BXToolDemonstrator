@@ -8,8 +8,8 @@ public class Circle {
 	
 	private String id;
 	private String type;
-	private int posX;
-	private int posY;
+	private double posX;
+	private double posY;
 	private String fillColor;
 	/**
 	 * @return the id
@@ -38,25 +38,25 @@ public class Circle {
 	/**
 	 * @return the posX
 	 */
-	public int getPosX() {
+	public double getPosX() {
 		return posX;
 	}
 	/**
 	 * @param posX the posX to set
 	 */
-	public void setPosX(int posX) {
+	public void setPosX(double posX) {
 		this.posX = posX;
 	}
 	/**
 	 * @return the posY
 	 */
-	public int getPosY() {
+	public double getPosY() {
 		return posY;
 	}
 	/**
 	 * @param posY the posY to set
 	 */
-	public void setPosY(int posY) {
+	public void setPosY(double posY) {
 		this.posY = posY;
 	}
 	/**

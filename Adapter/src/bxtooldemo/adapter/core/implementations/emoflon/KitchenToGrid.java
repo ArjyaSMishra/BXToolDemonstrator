@@ -30,7 +30,7 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 		super(null, null);
 	}
 	
-	private SynchronizationHelper helper;
+	private KitchenToGridSynchronizationHelper helper;
 
 	@Override
 	public String getName() {
@@ -62,8 +62,8 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 		helper.setSrc(gridRoot);
 		helper.integrateForward();	
 		
-		helper.setMute(true);
-		
+//		helper.setMute(true);
+		helper.setVerbose(true);
 	}
 
 	private Grid initialiseGrid() {
@@ -145,18 +145,16 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 
 	@Override
 	public void performAndPropagateTargetEdit(Consumer<Kitchen> edit) {
-		helper.setVerbose(true);
+		helper.updateConsistentState();
 		helper.setChangeTrg((EObject root) ->  edit.accept((Kitchen) root));
 		helper.integrateBackward();
-		
 	}
 
 	@Override
 	public void performAndPropagateSourceEdit(Consumer<Grid> edit) {
-		
+		helper.updateConsistentState();
 		helper.setChangeSrc((EObject root) ->  edit.accept((Grid) root));
 		helper.integrateForward();
-		
 	}
 
 	@Override

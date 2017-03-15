@@ -1,5 +1,6 @@
 package bxtooldemo.adapter.uimodels;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,6 +14,7 @@ public class Workspace extends Canvas {
 	
 	public Workspace(){
 		super(500, 500);
+		this.objects = new ArrayList<Circle>();
 	}
 
 	/**

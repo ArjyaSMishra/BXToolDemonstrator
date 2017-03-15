@@ -89,6 +89,21 @@ function initVisualize(uiModels) {
 
 function changeVisualize(uiModels) {
 
+	Workspace.clear();
+	if (uiModels!= null && uiModels.workspace.objects.length > 0) {
+		 //create items 
+		for (var i = 0; i < uiModels.workspace.objects.length; i++) {
+			Workspace.add(new fabric.Circle({
+				radius : 10,
+				fill : '#f55',
+				left : uiModels.workspace.objects[i].posX,
+				top : uiModels.workspace.objects[i].posY,
+				subType: uiModels.workspace.objects[i].id.split('_')[0],
+				id : uiModels.workspace.objects[i].id
+			}));
+		}
+	}
+	
 	Layout.clear();
 	drawGrid();
 
@@ -106,6 +121,7 @@ function changeVisualize(uiModels) {
 			}
 		}
 	}
+	
 	console.log("Visualization done after change propagation");
 
 }
