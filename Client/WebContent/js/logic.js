@@ -92,15 +92,18 @@ function changeVisualize(uiModels) {
 	Workspace.clear();
 	if (uiModels!= null && uiModels.workspace.objects.length > 0) {
 		 //create items 
+//		for (var i = 0; i < uiModels.workspace.objects.length; i++) {
+//			Workspace.add(new fabric.Circle({
+//				radius : 10,
+//				fill : '#f55',
+//				left : uiModels.workspace.objects[i].posX,
+//				top : uiModels.workspace.objects[i].posY,
+//				subType: uiModels.workspace.objects[i].id.split('_')[0],
+//				id : uiModels.workspace.objects[i].id
+//			}));
+//		}
 		for (var i = 0; i < uiModels.workspace.objects.length; i++) {
-			Workspace.add(new fabric.Circle({
-				radius : 10,
-				fill : '#f55',
-				left : uiModels.workspace.objects[i].posX,
-				top : uiModels.workspace.objects[i].posY,
-				subType: uiModels.workspace.objects[i].id.split('_')[0],
-				id : uiModels.workspace.objects[i].id
-			}));
+			addSink(uiModels, i);
 		}
 	}
 	
@@ -124,6 +127,13 @@ function changeVisualize(uiModels) {
 	
 	console.log("Visualization done after change propagation");
 
+}
+
+function addSink(uiModels, val){
+	fabric.Image.fromURL('assets/sink.jpg', function(img) {
+		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].id.split('_')[0], id: uiModels.workspace.objects[val].id}).scale(0.1);
+        Workspace.add(oImg);
+        });
 }
 
 function drawGrid() {
@@ -175,14 +185,18 @@ function drawGrid() {
 
 function addObject() {
 	var objectType = $("#objectSelect").val();
-	Workspace.add(new fabric.Circle({
-		radius : 10,
-		fill : '#f55',
-		left : x - 510,
-		top : y - 10,
-		subType: objectType,
-		id : objectType + "_" + object_counter
-	}));
+//	Workspace.add(new fabric.Circle({
+//		radius : 10,
+//		fill : '#f55',
+//		left : x - 510,
+//		top : y - 10,
+//		subType: objectType,
+//		id : objectType + "_" + object_counter
+//	}));
+	fabric.Image.fromURL('assets/sink.jpg', function(img) {
+		var oImg = img.set({ left: x - 510, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+        Workspace.add(oImg);
+        });
 	KitItemsCreated.push({
 		id : objectType + "_" + object_counter,
 		type : objectType,
