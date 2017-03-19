@@ -89,6 +89,7 @@ function initVisualize(uiModels) {
 
 function changeVisualize(uiModels) {
 
+	//Visualize Kitchen
 	Workspace.clear();
 	if (uiModels!= null && uiModels.workspace.objects.length > 0) {
 		 //create items 
@@ -103,10 +104,11 @@ function changeVisualize(uiModels) {
 //			}));
 //		}
 		for (var i = 0; i < uiModels.workspace.objects.length; i++) {
-			addSink(uiModels, i);
+			addSinkVisualize(uiModels, i);
 		}
 	}
 	
+	//Visualize Grid
 	Layout.clear();
 	drawGrid();
 
@@ -125,11 +127,41 @@ function changeVisualize(uiModels) {
 		}
 	}
 	
+	//Visualize Failed Deltas
+	if (uiModels!= null && uiModels.failedDeltas!= null && (uiModels.failedDeltas.created.length > 0 || uiModels.failedDeltas.deleted.length > 0 || uiModels.failedDeltas.moved.length > 0) ) {
+		var failedDeltaMsg = "Not Propagated changes are: ";
+		if(uiModels.failedDeltas.created.length > 0){
+			for(var i = 0; i < uiModels.failedDeltas.created.length; i++) {
+				failedDeltaMsg = failedDeltaMsg + " Creation of " + uiModels.failedDeltas.created[i].id;
+			}	
+		}
+		
+		if(uiModels.failedDeltas.deleted.length > 0){
+			for(var i = 0; i < uiModels.failedDeltas.deleted.length; i++) {
+				failedDeltaMsg = failedDeltaMsg + " Deletion of " + uiModels.failedDeltas.deleted[i].id;
+			}	
+		}
+		
+		if(uiModels.failedDeltas.moved.length > 0){
+			for(var i = 0; i < uiModels.failedDeltas.moved.length; i++) {
+				failedDeltaMsg = failedDeltaMsg + " Movement of " + uiModels.failedDeltas.moved[i].id;
+			}	
+		}
+		$('#messageDialog').text(failedDeltaMsg);
+	}
+	
 	console.log("Visualization done after change propagation");
 
 }
 
-function addSink(uiModels, val){
+function addSink(objectType, object_counter){
+	fabric.Image.fromURL('assets/sink.jpg', function(img) {
+		var oImg = img.set({ left: x - 510, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+        Workspace.add(oImg);
+        });
+}
+
+function addSinkVisualize(uiModels, val){
 	fabric.Image.fromURL('assets/sink.jpg', function(img) {
 		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].id.split('_')[0], id: uiModels.workspace.objects[val].id}).scale(0.1);
         Workspace.add(oImg);
@@ -193,10 +225,7 @@ function addObject() {
 //		subType: objectType,
 //		id : objectType + "_" + object_counter
 //	}));
-	fabric.Image.fromURL('assets/sink.jpg', function(img) {
-		var oImg = img.set({ left: x - 510, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
-        Workspace.add(oImg);
-        });
+	addSink(objectType, object_counter);
 	KitItemsCreated.push({
 		id : objectType + "_" + object_counter,
 		type : objectType,

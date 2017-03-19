@@ -12,6 +12,12 @@ public class Change {
 	private List<Circle> created;
 	private List<Circle> deleted;
 	private List<Circle> moved;
+	
+	public Change(){
+		this.created = new ArrayList<Circle>();
+		this.deleted = new ArrayList<Circle>();
+		this.moved = new ArrayList<Circle>();
+	}
 	/**
 	 * @return the created
 	 */

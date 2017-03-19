@@ -8,6 +8,19 @@ public class UIModels {
 	
 	private Layout layout;
 	private Workspace workspace;
+	private Change failedDeltas;
+	/**
+	 * @return the failedDeltas
+	 */
+	public Change getFailedDeltas() {
+		return failedDeltas;
+	}
+	/**
+	 * @param failedDeltas the failedDeltas to set
+	 */
+	public void setFailedDeltas(Change failedDeltas) {
+		this.failedDeltas = failedDeltas;
+	}
 	/**
 	 * @return the layout
 	 */

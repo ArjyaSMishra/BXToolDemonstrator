@@ -28,6 +28,7 @@ public class Analysis {
 	private Grid grid;
 	private UIModels uiModelsAdapter;
 	public static int blockArrayNo;
+	private Change failedSynchroChange;
 
 	public void initeMoflonTool(int blockArrayNo) {
 
@@ -39,12 +40,12 @@ public class Analysis {
 	public UIModels getUIModels() {
 
 		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(),
-				this.kitchenToGrid.getSourceModel());
+				this.kitchenToGrid.getSourceModel(), this.failedSynchroChange);
 
 		return this.uiModelsAdapter;
 	}
 
-	public UIModels convertToUIModels(Kitchen kitchen, Grid grid) {
+	public UIModels convertToUIModels(Kitchen kitchen, Grid grid, Change failedSynchroChange) {
 
 		Layout layoutAdapter = new Layout();
 		Workspace workspaceAdapter = new Workspace();
@@ -83,11 +84,11 @@ public class Analysis {
 			System.out.println("workspace adapter item size " + workspaceAdapter.getObjects().size());
 		}
 		
-		
 
 		// setting the UIModels
 		uiModelAdapter.setLayout(layoutAdapter);
 		uiModelAdapter.setWorkspace(workspaceAdapter);
+		uiModelAdapter.setFailedDeltas(failedSynchroChange);
 
 		return uiModelAdapter;
 	}
@@ -147,7 +148,63 @@ public class Analysis {
 		System.out.println("Grid noofgroups: " + this.kitchenToGrid.getSourceModel().getGroups().size());
 		System.out.println("Kitchen noofitems: " + this.kitchenToGrid.getTargetModel().getItems().size());
 
-		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel());
+		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel(), this.failedSynchroChange);
+
+		return this.uiModelsAdapter;
+	}
+	
+	public UIModels getUIModelsAfterAtomicDeltaPropagation(Change change) {
+		Consumer<Kitchen> edit = (kitchen) -> {
+		};
+		
+		this.failedSynchroChange = new Change();
+
+		System.out.println("create list length before edit: " + change.getCreated().size());
+		if (change.getCreated() != null && change.getCreated().size() > 0) {
+			for (Circle circle : change.getCreated()) {
+				Consumer<Kitchen> editCreate = edit.andThen((kitchen) -> {
+					String type = circle.getType();
+					EClass eClass = (EClass) KitchenLanguagePackage.eINSTANCE.getEClassifier(type);
+					Item item = (Item) KitchenLanguageFactory.eINSTANCE.create(eClass);
+					item.setId(circle.getId());
+					item.setXPos(circle.getPosX());
+					item.setYPos(circle.getPosY());
+					System.out.println("item "+ item);
+					kitchen.getItems().add(item);
+				});
+				this.kitchenToGrid.performAndPropagateTargetEdit(editCreate);
+				this.failedSynchroChange.getCreated().add(circle);
+			}
+		}
+
+		System.out.println("delete list length before edit: " + change.getDeleted().size());
+		if (change.getDeleted() != null && change.getDeleted().size() > 0) {
+			for (Circle circle : change.getDeleted()) {
+				Consumer<Kitchen> editDelete = edit.andThen((kitchen) -> {
+					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(circle.getId())).findFirst().orElse(null);
+					System.out.println("item "+ item);
+				    EcoreUtil.delete(item);
+				});
+				this.kitchenToGrid.performAndPropagateTargetEdit(editDelete);
+				this.failedSynchroChange.getDeleted().add(circle);
+			}
+		}
+		
+		System.out.println("moved list length before edit: " + change.getMoved().size());
+		if (change.getMoved() != null && change.getMoved().size() > 0) {
+			for (Circle circle : change.getMoved()) {
+				Consumer<Kitchen> editMoved = edit.andThen((kitchen) -> {
+					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(circle.getId())).findFirst().orElse(null);
+					System.out.println("item "+ item);
+					item.setXPos(circle.getPosX());
+					item.setYPos(circle.getPosY());
+				});
+				this.kitchenToGrid.performAndPropagateTargetEdit(editMoved);
+				this.failedSynchroChange.getMoved().add(circle);
+			}
+		}
+
+		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel(), this.failedSynchroChange);
 
 		return this.uiModelsAdapter;
 	}

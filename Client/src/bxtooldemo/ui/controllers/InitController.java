@@ -104,7 +104,7 @@ public class InitController extends HttpServlet {
 	    change.setDeleted(deletedItems);
 	    change.setMoved(movedItems);
 
-		this.uimodels = this.adapterAnalysis.getUIModelsAfterChange(change);
+		this.uimodels = this.adapterAnalysis.getUIModelsAfterAtomicDeltaPropagation(change);
 		
 	}
 
