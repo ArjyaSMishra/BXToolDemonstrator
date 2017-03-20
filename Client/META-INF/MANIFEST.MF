@@ -5,8 +5,7 @@ Bundle-SymbolicName: Client
 Bundle-Version: 1.0.0.qualifier
 Export-Package: bxtooldemo.ui.controllers,
  bxtooldemo.ui.core
-Require-Bundle: Benchmarx;bundle-version="1.0.0",
- GridLanguage;bundle-version="1.0.0",
+Require-Bundle: GridLanguage;bundle-version="1.0.0",
  KitchenLanguage;bundle-version="1.0.0",
  KitchenToGridLanguage;bundle-version="1.0.0",
  Adapter;bundle-version="1.0.0"

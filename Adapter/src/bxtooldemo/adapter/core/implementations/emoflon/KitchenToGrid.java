@@ -4,31 +4,20 @@ import java.net.URL;
 import java.util.function.Consumer;
 
 import org.apache.log4j.BasicConfigurator;
-import org.benchmarx.BXToolForEMF;
-import org.benchmarx.Comparator;
-import org.benchmarx.Configurator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.moflon.tgg.algorithm.synchronization.SynchronizationHelper;
+import org.moflon.tgg.algorithm.configuration.Configurator;
 
 import GridLanguage.Block;
 import GridLanguage.Grid;
 import GridLanguage.GridLanguageFactory;
 import KitchenLanguage.Kitchen;
 import KitchenToGridLanguage.KitchenToGridLanguagePackage;
+import bxtooldemo.adapter.core.BXTool;
 import bxtooldemo.adapter.core.uiservice.Analysis;
-import bxtooldemo.adapter.models.Decisions;
 
-public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
-	
-	public KitchenToGrid(Comparator<Grid> src, Comparator<Kitchen> trg) {
-		super(src, trg);
-	}
-	
-	public KitchenToGrid() {
-		super(null, null);
-	}
+public class KitchenToGrid implements BXTool<Grid, Kitchen, Configurator> {
 	
 	private KitchenToGridSynchronizationHelper helper;
 
@@ -158,8 +147,8 @@ public class KitchenToGrid extends BXToolForEMF<Grid, Kitchen, Decisions> {
 	}
 
 	@Override
-	public void setConfigurator(Configurator<Decisions> configurator) {
-		// No configuration at the moment
+	public void setConfigurator(Configurator configurator) {
+		helper.setConfigurator(configurator);
 	}
 
 	@Override

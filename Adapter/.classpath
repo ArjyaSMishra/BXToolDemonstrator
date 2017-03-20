@@ -13,7 +13,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Benchmarx"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GridLanguage"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/KitchenLanguage"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/KitchenToGridLanguage"/>

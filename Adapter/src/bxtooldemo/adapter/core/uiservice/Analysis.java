@@ -13,6 +13,7 @@ import KitchenLanguage.Kitchen;
 import KitchenLanguage.KitchenLanguageFactory;
 import KitchenLanguage.KitchenLanguagePackage;
 import bxtooldemo.adapter.core.implementations.emoflon.KitchenToGrid;
+import bxtooldemo.adapter.core.implementations.emoflon.KitchenToGridConfigurator;
 import bxtooldemo.adapter.uimodels.Change;
 import bxtooldemo.adapter.uimodels.Circle;
 import bxtooldemo.adapter.uimodels.Layout;
@@ -35,6 +36,7 @@ public class Analysis {
 		this.kitchenToGrid = new KitchenToGrid();
 		Analysis.blockArrayNo = blockArrayNo;
 		this.kitchenToGrid.initiateSynchronisationDialogue();
+		kitchenToGrid.setConfigurator(new KitchenToGridConfigurator());
 	}
 
 	public UIModels getUIModels() {
@@ -172,8 +174,13 @@ public class Analysis {
 					System.out.println("item "+ item);
 					kitchen.getItems().add(item);
 				});
-				this.kitchenToGrid.performAndPropagateTargetEdit(editCreate);
-				this.failedSynchroChange.getCreated().add(circle);
+				try
+			      {
+					this.kitchenToGrid.performAndPropagateTargetEdit(editCreate);
+			      } catch (Exception e)
+			      {
+			    	this.failedSynchroChange.getCreated().add(circle);
+			      }
 			}
 		}
 
@@ -185,8 +192,13 @@ public class Analysis {
 					System.out.println("item "+ item);
 				    EcoreUtil.delete(item);
 				});
-				this.kitchenToGrid.performAndPropagateTargetEdit(editDelete);
-				this.failedSynchroChange.getDeleted().add(circle);
+				try
+			      {
+					this.kitchenToGrid.performAndPropagateTargetEdit(editDelete);
+			      } catch (Exception e)
+			      {
+			    	  this.failedSynchroChange.getDeleted().add(circle);
+			      }
 			}
 		}
 		
@@ -199,8 +211,13 @@ public class Analysis {
 					item.setXPos(circle.getPosX());
 					item.setYPos(circle.getPosY());
 				});
-				this.kitchenToGrid.performAndPropagateTargetEdit(editMoved);
-				this.failedSynchroChange.getMoved().add(circle);
+				try
+			      {
+					this.kitchenToGrid.performAndPropagateTargetEdit(editMoved);
+			      } catch (Exception e)
+			      {
+			    	  this.failedSynchroChange.getMoved().add(circle);
+			      }		
 			}
 		}
 

@@ -49,8 +49,9 @@ public class KitchenToGridSynchronizationHelper extends SynchronizationHelper {
 	         synchronizer.synchronize();
 	      } catch (Exception e)
 	      {
-	    	  e.printStackTrace();
+	    	  //e.printStackTrace();
 	    	  rollback();
+	    	  throw new IllegalStateException("Delta is not consistent");
 	      }
 	}
 

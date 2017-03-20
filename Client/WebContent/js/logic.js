@@ -234,9 +234,9 @@ function addObject() {
 	});
 	object_counter++;
 	
-	console.log("created array len "+ KitItemsCreated.length );
-	console.log("deleted array len "+ KitItemsDeleted.length);
-	console.log("moved array len "+ KitItemsMoved.length);
+	console.log("created array length "+ KitItemsCreated.length );
+	console.log("deleted array length "+ KitItemsDeleted.length);
+	console.log("moved array length "+ KitItemsMoved.length);
 }
 
 function deleteObject() {

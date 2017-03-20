@@ -6,7 +6,6 @@ Bundle-Version: 1.0.0.qualifier
 Export-Package: bxtooldemo.adapter.core,
  bxtooldemo.adapter.core.implementations.emoflon,
  bxtooldemo.adapter.core.uiservice,
- bxtooldemo.adapter.models,
  bxtooldemo.adapter.uimodels
 Require-Bundle: org.eclipse.emf.ecore;bundle-version="2.12.0",
  org.moflon.tgg.language;bundle-version="2.1.0",
