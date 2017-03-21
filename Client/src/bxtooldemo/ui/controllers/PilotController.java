@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import bxtooldemo.adapter.uimodels.Circle;
+import bxtooldemo.adapter.uimodels.Element;
 import bxtooldemo.adapter.uimodels.Rectangle;
 import bxtooldemo.adapter.uimodels.Workspace;
 
@@ -46,12 +46,12 @@ public class PilotController extends HttpServlet {
 //		requestDispatcher.forward(request, response);
 		Gson gson = new Gson();
 		String json;
-		Circle data = null;
+		Element data = null;
 		if (request.getParameter("loadProds") != null) {
 		
 			json = request.getParameter("jsonData");
 			 
-			 data = gson.fromJson(json, Circle.class);
+			 data = gson.fromJson(json, Element.class);
 		}
 		
 		Rectangle rect = new Rectangle();
@@ -69,7 +69,7 @@ public class PilotController extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	   Circle c1 = new Circle();
+	   Element c1 = new Element();
 	   c1.setId("sink1");
 	   c1.setPosX(180);
 	   c1.setPosY(270);

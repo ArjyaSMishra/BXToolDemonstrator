@@ -9,49 +9,49 @@ import java.util.List;
  */
 public class Change {
 	
-	private List<Circle> created;
-	private List<Circle> deleted;
-	private List<Circle> moved;
+	private List<Element> created;
+	private List<Element> deleted;
+	private List<Element> moved;
 	
 	public Change(){
-		this.created = new ArrayList<Circle>();
-		this.deleted = new ArrayList<Circle>();
-		this.moved = new ArrayList<Circle>();
+		this.created = new ArrayList<Element>();
+		this.deleted = new ArrayList<Element>();
+		this.moved = new ArrayList<Element>();
 	}
 	/**
 	 * @return the created
 	 */
-	public List<Circle> getCreated() {
+	public List<Element> getCreated() {
 		return created;
 	}
 	/**
 	 * @param created the created to set
 	 */
-	public void setCreated(List<Circle> created) {
+	public void setCreated(List<Element> created) {
 		this.created = created;
 	}
 	/**
 	 * @return the deleted
 	 */
-	public List<Circle> getDeleted() {
+	public List<Element> getDeleted() {
 		return deleted;
 	}
 	/**
 	 * @param deleted the deleted to set
 	 */
-	public void setDeleted(List<Circle> deleted) {
+	public void setDeleted(List<Element> deleted) {
 		this.deleted = deleted;
 	}
 	/**
 	 * @return the moved
 	 */
-	public List<Circle> getMoved() {
+	public List<Element> getMoved() {
 		return moved;
 	}
 	/**
 	 * @param moved the moved to set
 	 */
-	public void setMoved(List<Circle> moved) {
+	public void setMoved(List<Element> moved) {
 		this.moved = moved;
 	}
 

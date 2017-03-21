@@ -4,7 +4,7 @@ package bxtooldemo.adapter.uimodels;
  * @author Arjya Shankar Mishra
  *
  */
-public class Circle {
+public class Element {
 	
 	private String id;
 	private String type;

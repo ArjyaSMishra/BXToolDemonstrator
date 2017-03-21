@@ -15,7 +15,7 @@ import com.google.gson.reflect.TypeToken;
 
 import bxtooldemo.adapter.core.uiservice.Analysis;
 import bxtooldemo.adapter.uimodels.Change;
-import bxtooldemo.adapter.uimodels.Circle;
+import bxtooldemo.adapter.uimodels.Element;
 import bxtooldemo.adapter.uimodels.UIModels;
 
 /**
@@ -88,16 +88,16 @@ public class InitController extends HttpServlet {
 		String jsonCreated;
 		String jsonDeleted;
 		String jsonMoved;
-		List<Circle> createdItems = null;
-		List<Circle> deletedItems = null;
-		List<Circle> movedItems = null;
+		List<Element> createdItems = null;
+		List<Element> deletedItems = null;
+		List<Element> movedItems = null;
 		
 		jsonCreated = request.getParameter("ItemsCreated");
 		jsonDeleted = request.getParameter("ItemsDeleted");
 		jsonMoved = request.getParameter("ItemsMoved");
-		createdItems = gson.fromJson(jsonCreated, new TypeToken<List<Circle>>(){}.getType());
-		deletedItems = gson.fromJson(jsonDeleted, new TypeToken<List<Circle>>(){}.getType());
-		movedItems = gson.fromJson(jsonMoved, new TypeToken<List<Circle>>(){}.getType());
+		createdItems = gson.fromJson(jsonCreated, new TypeToken<List<Element>>(){}.getType());
+		deletedItems = gson.fromJson(jsonDeleted, new TypeToken<List<Element>>(){}.getType());
+		movedItems = gson.fromJson(jsonMoved, new TypeToken<List<Element>>(){}.getType());
 		
 		Change change = new Change();
 	    change.setCreated(createdItems);

@@ -15,7 +15,7 @@ import KitchenLanguage.KitchenLanguagePackage;
 import bxtooldemo.adapter.core.implementations.emoflon.KitchenToGrid;
 import bxtooldemo.adapter.core.implementations.emoflon.KitchenToGridConfigurator;
 import bxtooldemo.adapter.uimodels.Change;
-import bxtooldemo.adapter.uimodels.Circle;
+import bxtooldemo.adapter.uimodels.Element;
 import bxtooldemo.adapter.uimodels.Layout;
 import bxtooldemo.adapter.uimodels.Rectangle;
 import bxtooldemo.adapter.uimodels.UIGroup;
@@ -54,7 +54,7 @@ public class Analysis {
 		UIModels uiModelAdapter = new UIModels();
 		UIGroup uiGroup;
 		Rectangle rect;
-		Circle circle;
+		Element element;
 
 		// layout conversion
 		layoutAdapter.setGridSize(grid.getBlockSize());
@@ -77,11 +77,11 @@ public class Analysis {
 		if (kitchen != null && kitchen.getItems().size() > 0) {
 			
 			for (Item item : kitchen.getItems()) {
-					circle = new Circle();
-					circle.setId(item.getId());
-					circle.setPosX(item.getXPos());
-					circle.setPosY(item.getYPos());
-					workspaceAdapter.getObjects().add(circle);
+					element = new Element();
+					element.setId(item.getId());
+					element.setPosX(item.getXPos());
+					element.setPosY(item.getYPos());
+					workspaceAdapter.getObjects().add(element);
 			}
 			System.out.println("workspace adapter item size " + workspaceAdapter.getObjects().size());
 		}
@@ -101,14 +101,14 @@ public class Analysis {
 
 		System.out.println("create list length before edit: " + change.getCreated().size());
 		if (change.getCreated() != null && change.getCreated().size() > 0) {
-			for (Circle circle : change.getCreated()) {
+			for (Element element : change.getCreated()) {
 				edit = edit.andThen((kitchen) -> {
-					String type = circle.getType();
+					String type = element.getType();
 					EClass eClass = (EClass) KitchenLanguagePackage.eINSTANCE.getEClassifier(type);
 					Item item = (Item) KitchenLanguageFactory.eINSTANCE.create(eClass);
-					item.setId(circle.getId());
-					item.setXPos(circle.getPosX());
-					item.setYPos(circle.getPosY());
+					item.setId(element.getId());
+					item.setXPos(element.getPosX());
+					item.setYPos(element.getPosY());
 					System.out.println("item "+ item);
 					kitchen.getItems().add(item);
 				});
@@ -117,9 +117,9 @@ public class Analysis {
 
 		System.out.println("delete list length before edit: " + change.getDeleted().size());
 		if (change.getDeleted() != null && change.getDeleted().size() > 0) {
-			for (Circle circle : change.getDeleted()) {
+			for (Element element : change.getDeleted()) {
 				edit = edit.andThen((kitchen) -> {
-					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(circle.getId())).findFirst().orElse(null);
+					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
 					System.out.println("item "+ item);
 				    EcoreUtil.delete(item);
 				});
@@ -128,12 +128,12 @@ public class Analysis {
 		
 		System.out.println("moved list length before edit: " + change.getMoved().size());
 		if (change.getMoved() != null && change.getMoved().size() > 0) {
-			for (Circle circle : change.getMoved()) {
+			for (Element element : change.getMoved()) {
 				edit = edit.andThen((kitchen) -> {
-					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(circle.getId())).findFirst().orElse(null);
+					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
 					System.out.println("item "+ item);
-					item.setXPos(circle.getPosX());
-					item.setYPos(circle.getPosY());
+					item.setXPos(element.getPosX());
+					item.setYPos(element.getPosY());
 				});
 			}
 		}
@@ -163,14 +163,14 @@ public class Analysis {
 
 		System.out.println("create list length before edit: " + change.getCreated().size());
 		if (change.getCreated() != null && change.getCreated().size() > 0) {
-			for (Circle circle : change.getCreated()) {
+			for (Element element : change.getCreated()) {
 				Consumer<Kitchen> editCreate = edit.andThen((kitchen) -> {
-					String type = circle.getType();
+					String type = element.getType();
 					EClass eClass = (EClass) KitchenLanguagePackage.eINSTANCE.getEClassifier(type);
 					Item item = (Item) KitchenLanguageFactory.eINSTANCE.create(eClass);
-					item.setId(circle.getId());
-					item.setXPos(circle.getPosX());
-					item.setYPos(circle.getPosY());
+					item.setId(element.getId());
+					item.setXPos(element.getPosX());
+					item.setYPos(element.getPosY());
 					System.out.println("item "+ item);
 					kitchen.getItems().add(item);
 				});
@@ -179,16 +179,16 @@ public class Analysis {
 					this.kitchenToGrid.performAndPropagateTargetEdit(editCreate);
 			      } catch (Exception e)
 			      {
-			    	this.failedSynchroChange.getCreated().add(circle);
+			    	this.failedSynchroChange.getCreated().add(element);
 			      }
 			}
 		}
 
 		System.out.println("delete list length before edit: " + change.getDeleted().size());
 		if (change.getDeleted() != null && change.getDeleted().size() > 0) {
-			for (Circle circle : change.getDeleted()) {
+			for (Element element : change.getDeleted()) {
 				Consumer<Kitchen> editDelete = edit.andThen((kitchen) -> {
-					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(circle.getId())).findFirst().orElse(null);
+					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
 					System.out.println("item "+ item);
 				    EcoreUtil.delete(item);
 				});
@@ -197,26 +197,26 @@ public class Analysis {
 					this.kitchenToGrid.performAndPropagateTargetEdit(editDelete);
 			      } catch (Exception e)
 			      {
-			    	  this.failedSynchroChange.getDeleted().add(circle);
+			    	  this.failedSynchroChange.getDeleted().add(element);
 			      }
 			}
 		}
 		
 		System.out.println("moved list length before edit: " + change.getMoved().size());
 		if (change.getMoved() != null && change.getMoved().size() > 0) {
-			for (Circle circle : change.getMoved()) {
+			for (Element element : change.getMoved()) {
 				Consumer<Kitchen> editMoved = edit.andThen((kitchen) -> {
-					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(circle.getId())).findFirst().orElse(null);
+					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
 					System.out.println("item "+ item);
-					item.setXPos(circle.getPosX());
-					item.setYPos(circle.getPosY());
+					item.setXPos(element.getPosX());
+					item.setYPos(element.getPosY());
 				});
 				try
 			      {
 					this.kitchenToGrid.performAndPropagateTargetEdit(editMoved);
 			      } catch (Exception e)
 			      {
-			    	  this.failedSynchroChange.getMoved().add(circle);
+			    	  this.failedSynchroChange.getMoved().add(element);
 			      }		
 			}
 		}

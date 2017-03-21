@@ -9,25 +9,25 @@ import java.util.List;
  */
 public class Workspace extends Canvas {
 
-	private List<Circle> objects;
+	private List<Element> objects;
 	private List<String> objectTypeList;
 	
 	public Workspace(){
 		super(500, 500);
-		this.objects = new ArrayList<Circle>();
+		this.objects = new ArrayList<Element>();
 	}
 
 	/**
 	 * @return the objects
 	 */
-	public List<Circle> getObjects() {
+	public List<Element> getObjects() {
 		return objects;
 	}
 
 	/**
 	 * @param objects the objects to set
 	 */
-	public void setObjects(Circle object) {
+	public void setObjects(Element object) {
 		this.objects.add(object);
 	}
 
