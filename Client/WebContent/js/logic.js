@@ -104,7 +104,10 @@ function changeVisualize(uiModels) {
 //			}));
 //		}
 		for (var i = 0; i < uiModels.workspace.objects.length; i++) {
-			addSinkVisualize(uiModels, i);
+			if(uiModels.workspace.objects[i].type == 'Sink'){
+			    addSinkVisualize(uiModels, i);}
+			else {
+				addTableVisualize(uiModels, i);}
 		}
 	}
 	
@@ -168,6 +171,20 @@ function addSinkVisualize(uiModels, val){
         });
 }
 
+function addTable(objectType, object_counter){
+	fabric.Image.fromURL('assets/table.jpg', function(img) {
+		var oImg = img.set({ left: x - 510, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+        Workspace.add(oImg);
+        });
+}
+
+function addTableVisualize(uiModels, val){
+	fabric.Image.fromURL('assets/table.jpg', function(img) {
+		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].id.split('_')[0], id: uiModels.workspace.objects[val].id}).scale(0.1);
+        Workspace.add(oImg);
+        });
+}
+
 function drawGrid() {
 
 	var noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber")
@@ -225,7 +242,11 @@ function addObject() {
 //		subType: objectType,
 //		id : objectType + "_" + object_counter
 //	}));
-	addSink(objectType, object_counter);
+	if(objectType == "Sink"){
+	    addSink(objectType, object_counter);}
+	else {
+		addTable(objectType, object_counter);}
+	
 	KitItemsCreated.push({
 		id : objectType + "_" + object_counter,
 		type : objectType,

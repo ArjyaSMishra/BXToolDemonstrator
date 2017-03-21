@@ -81,6 +81,7 @@ public class Analysis {
 					element.setId(item.getId());
 					element.setPosX(item.getXPos());
 					element.setPosY(item.getYPos());
+					element.setType(item.eClass().getName());
 					workspaceAdapter.getObjects().add(element);
 			}
 			System.out.println("workspace adapter item size " + workspaceAdapter.getObjects().size());
@@ -222,7 +223,7 @@ public class Analysis {
 		}
 
 		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel(), this.failedSynchroChange);
-
+		
 		return this.uiModelsAdapter;
 	}
 
