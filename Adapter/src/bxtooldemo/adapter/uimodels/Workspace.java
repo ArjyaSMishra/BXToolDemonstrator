@@ -10,7 +10,7 @@ import java.util.List;
 public class Workspace extends Canvas {
 
 	private List<Circle> objects;
-	private List<Item> objectTypeList;
+	private List<String> objectTypeList;
 	
 	public Workspace(){
 		super(500, 500);
@@ -34,14 +34,14 @@ public class Workspace extends Canvas {
 	/**
 	 * @return the objectTypeList
 	 */
-	public List<Item> getObjectTypeList() {
+	public List<String> getObjectTypeList() {
 		return objectTypeList;
 	}
 
 	/**
 	 * @param objectTypeList the objectTypeList to set
 	 */
-	public void setObjectTypeList(List<Item> objectTypeList) {
+	public void setObjectTypeList(List<String> objectTypeList) {
 		this.objectTypeList = objectTypeList;
 	}
 }
