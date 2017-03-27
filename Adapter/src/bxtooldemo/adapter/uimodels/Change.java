@@ -12,6 +12,7 @@ public class Change {
 	private List<Element> created;
 	private List<Element> deleted;
 	private List<Element> moved;
+	private List<UIGroup> groupCreated;
 	
 	public Change(){
 		this.created = new ArrayList<Element>();
@@ -53,6 +54,18 @@ public class Change {
 	 */
 	public void setMoved(List<Element> moved) {
 		this.moved = moved;
+	}
+	/**
+	 * @return the groupCreated
+	 */
+	public List<UIGroup> getGroupCreated() {
+		return groupCreated;
+	}
+	/**
+	 * @param groupCreated the groupCreated to set
+	 */
+	public void setGroupCreated(List<UIGroup> groupCreated) {
+		this.groupCreated = groupCreated;
 	}
 
 }

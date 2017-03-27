@@ -1,19 +1,28 @@
 package bxtooldemo.adapter.core.uiservice;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.function.Consumer;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 
 import GridLanguage.Block;
 import GridLanguage.Grid;
+import GridLanguage.GridLanguageFactory;
 import GridLanguage.Group;
 import KitchenLanguage.Item;
+import KitchenLanguage.ItemSocket;
 import KitchenLanguage.Kitchen;
 import KitchenLanguage.KitchenLanguageFactory;
 import KitchenLanguage.KitchenLanguagePackage;
 import bxtooldemo.adapter.core.implementations.emoflon.KitchenToGrid;
 import bxtooldemo.adapter.core.implementations.emoflon.KitchenToGridConfigurator;
+import bxtooldemo.adapter.core.implementations.emoflon.SynchronisationFailedException;
 import bxtooldemo.adapter.uimodels.Change;
 import bxtooldemo.adapter.uimodels.Element;
 import bxtooldemo.adapter.uimodels.Layout;
@@ -30,6 +39,7 @@ public class Analysis {
 	private UIModels uiModelsAdapter;
 	public static int blockArrayNo;
 	private Change failedSynchroChange;
+	private Map<Integer, String> groupColors = new HashMap();
 
 	public void initeMoflonTool(int blockArrayNo) {
 
@@ -64,6 +74,7 @@ public class Analysis {
 				for (Block block : group.getOccupies()) {
 					rect = new Rectangle();
 					rect.setId("block_"+block.getXIndex()+"_"+block.getYIndex());
+					uiGroup.setFillColor(getColorForGroup(group));
 					uiGroup.getBlocks().add(rect);
 				}
 				layoutAdapter.getGroups().add(uiGroup);
@@ -74,14 +85,14 @@ public class Analysis {
 		workspaceAdapter.setWidth((int) kitchen.getXSize());
 		workspaceAdapter.setHeight((int) kitchen.getYSize());
 		
-		if (kitchen != null && kitchen.getItems().size() > 0) {
+		if (kitchen != null && kitchen.getItemSockets().size() > 0) {
 			
-			for (Item item : kitchen.getItems()) {
+			for (ItemSocket itemSocket : kitchen.getItemSockets()) {
 					element = new Element();
-					element.setId(item.getId());
-					element.setPosX(item.getXPos());
-					element.setPosY(item.getYPos());
-					element.setType(item.eClass().getName());
+					element.setId(itemSocket.getId());
+					element.setPosX(itemSocket.getItem().getXPos());
+					element.setPosY(itemSocket.getItem().getYPos());
+					element.setType(itemSocket.getItem().eClass().getName());
 					workspaceAdapter.getObjects().add(element);
 			}
 			System.out.println("workspace adapter item size " + workspaceAdapter.getObjects().size());
@@ -95,6 +106,41 @@ public class Analysis {
 
 		return uiModelAdapter;
 	}
+	
+	public String getColorForGroup(Group group){
+		String color = null;
+		
+		for (Map.Entry<Integer, String> entry : this.groupColors.entrySet()){
+			if(group.hashCode() == entry.getKey()){
+				return entry.getValue();
+			}
+		}
+		
+		Random random = new Random();
+        // create a big random number - maximum is ffffff (hex) = 16777215 (dez)
+        int nextInt = random.nextInt(256*256*256);
+        // format it as hexadecimal string (with hashtag and leading zeros)
+        color = String.format("#%06x", nextInt);
+		this.groupColors.put(group.hashCode(), color );
+		
+		return color;
+	}
+	
+	public void refreshOldMapping(Copier objectMapping){
+		String color = null;
+		Map<Integer, String> groupColors_new = new HashMap();
+		
+		for (Map.Entry<Integer, String> currentMapping : this.groupColors.entrySet()){
+			for (Map.Entry<EObject, EObject> entry : objectMapping.entrySet()){
+				if(currentMapping.getKey() == entry.getKey().hashCode()){
+					groupColors_new.put(entry.getValue().hashCode(),currentMapping.getValue());
+				}
+			}
+		}
+		
+		this.groupColors.clear();
+		this.groupColors = groupColors_new;
+	}
 
 	public Consumer<Kitchen> convertDeltaToEdit(Change change) {
 		Consumer<Kitchen> edit = (kitchen) -> {
@@ -106,12 +152,14 @@ public class Analysis {
 				edit = edit.andThen((kitchen) -> {
 					String type = element.getType();
 					EClass eClass = (EClass) KitchenLanguagePackage.eINSTANCE.getEClassifier(type);
+					ItemSocket itemSocket = KitchenLanguageFactory.eINSTANCE.createItemSocket();
 					Item item = (Item) KitchenLanguageFactory.eINSTANCE.create(eClass);
-					item.setId(element.getId());
+					itemSocket.setId(element.getId());
 					item.setXPos(element.getPosX());
 					item.setYPos(element.getPosY());
 					System.out.println("item "+ item);
-					kitchen.getItems().add(item);
+					itemSocket.setItem(item);;
+					kitchen.getItemSockets().add(itemSocket);
 				});
 			}
 		}
@@ -120,9 +168,9 @@ public class Analysis {
 		if (change.getDeleted() != null && change.getDeleted().size() > 0) {
 			for (Element element : change.getDeleted()) {
 				edit = edit.andThen((kitchen) -> {
-					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
-					System.out.println("item "+ item);
-				    EcoreUtil.delete(item);
+					ItemSocket itemSocket =  kitchen.getItemSockets().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
+					System.out.println("item "+ itemSocket);
+				    EcoreUtil.delete(itemSocket);
 				});
 			}
 		}
@@ -131,10 +179,10 @@ public class Analysis {
 		if (change.getMoved() != null && change.getMoved().size() > 0) {
 			for (Element element : change.getMoved()) {
 				edit = edit.andThen((kitchen) -> {
-					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
-					System.out.println("item "+ item);
-					item.setXPos(element.getPosX());
-					item.setYPos(element.getPosY());
+					ItemSocket itemSocket = kitchen.getItemSockets().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
+					System.out.println("item "+ itemSocket);
+					itemSocket.getItem().setXPos(element.getPosX());
+					itemSocket.getItem().setYPos(element.getPosY());
 				});
 			}
 		}
@@ -149,7 +197,7 @@ public class Analysis {
 		System.out.println("Grid blocksize: " + this.kitchenToGrid.getSourceModel().getBlockSize());
 		System.out.println("Grid noofblocks: " + this.kitchenToGrid.getSourceModel().getBlocks().size());
 		System.out.println("Grid noofgroups: " + this.kitchenToGrid.getSourceModel().getGroups().size());
-		System.out.println("Kitchen noofitems: " + this.kitchenToGrid.getTargetModel().getItems().size());
+		System.out.println("Kitchen noofitems: " + this.kitchenToGrid.getTargetModel().getItemSockets().size());
 
 		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel(), this.failedSynchroChange);
 
@@ -157,7 +205,10 @@ public class Analysis {
 	}
 	
 	public UIModels getUIModelsAfterAtomicDeltaPropagation(Change change) {
-		Consumer<Kitchen> edit = (kitchen) -> {
+		Consumer<Kitchen> kitchenEdit = (kitchen) -> {
+		};
+		
+		Consumer<Grid> gridEdit = (grid) -> {
 		};
 		
 		this.failedSynchroChange = new Change();
@@ -165,21 +216,24 @@ public class Analysis {
 		System.out.println("create list length before edit: " + change.getCreated().size());
 		if (change.getCreated() != null && change.getCreated().size() > 0) {
 			for (Element element : change.getCreated()) {
-				Consumer<Kitchen> editCreate = edit.andThen((kitchen) -> {
+				Consumer<Kitchen> editCreate = kitchenEdit.andThen((kitchen) -> {
 					String type = element.getType();
 					EClass eClass = (EClass) KitchenLanguagePackage.eINSTANCE.getEClassifier(type);
+					ItemSocket itemSocket = KitchenLanguageFactory.eINSTANCE.createItemSocket();
 					Item item = (Item) KitchenLanguageFactory.eINSTANCE.create(eClass);
-					item.setId(element.getId());
+					itemSocket.setId(element.getId());
 					item.setXPos(element.getPosX());
 					item.setYPos(element.getPosY());
 					System.out.println("item "+ item);
-					kitchen.getItems().add(item);
+					itemSocket.setItem(item);;
+					kitchen.getItemSockets().add(itemSocket);
 				});
 				try
 			      {
 					this.kitchenToGrid.performAndPropagateTargetEdit(editCreate);
-			      } catch (Exception e)
+			      } catch (SynchronisationFailedException e)
 			      {
+			    	refreshOldMapping(e.getObjectMapping());
 			    	this.failedSynchroChange.getCreated().add(element);
 			      }
 			}
@@ -188,16 +242,17 @@ public class Analysis {
 		System.out.println("delete list length before edit: " + change.getDeleted().size());
 		if (change.getDeleted() != null && change.getDeleted().size() > 0) {
 			for (Element element : change.getDeleted()) {
-				Consumer<Kitchen> editDelete = edit.andThen((kitchen) -> {
-					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
-					System.out.println("item "+ item);
-				    EcoreUtil.delete(item);
+				Consumer<Kitchen> editDelete = kitchenEdit.andThen((kitchen) -> {
+					ItemSocket itemSocket =  kitchen.getItemSockets().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
+					System.out.println("item "+ itemSocket);
+				    EcoreUtil.delete(itemSocket);
 				});
 				try
 			      {
 					this.kitchenToGrid.performAndPropagateTargetEdit(editDelete);
-			      } catch (Exception e)
+			      } catch (SynchronisationFailedException e)
 			      {
+			    	  refreshOldMapping(e.getObjectMapping());
 			    	  this.failedSynchroChange.getDeleted().add(element);
 			      }
 			}
@@ -206,21 +261,40 @@ public class Analysis {
 		System.out.println("moved list length before edit: " + change.getMoved().size());
 		if (change.getMoved() != null && change.getMoved().size() > 0) {
 			for (Element element : change.getMoved()) {
-				Consumer<Kitchen> editMoved = edit.andThen((kitchen) -> {
-					Item item = kitchen.getItems().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
-					System.out.println("item "+ item);
-					item.setXPos(element.getPosX());
-					item.setYPos(element.getPosY());
+				Consumer<Kitchen> editMoved = kitchenEdit.andThen((kitchen) -> {
+					ItemSocket itemSocket = kitchen.getItemSockets().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
+					System.out.println("item "+ itemSocket);
+					itemSocket.getItem().setXPos(element.getPosX());
+					itemSocket.getItem().setYPos(element.getPosY());
 				});
 				try
 			      {
 					this.kitchenToGrid.performAndPropagateTargetEdit(editMoved);
-			      } catch (Exception e)
+			      } catch (SynchronisationFailedException e)
 			      {
+			    	  refreshOldMapping(e.getObjectMapping());
 			    	  this.failedSynchroChange.getMoved().add(element);
 			      }		
 			}
 		}
+		
+//		System.out.println("group list length before edit: " + change.getGroupCreated().size());
+//		if (change.getGroupCreated() != null && change.getGroupCreated().size() > 0) {
+//			for (UIGroup uiGroup : change.getGroupCreated()) {
+//				Consumer<Grid> editGroupCreated = gridEdit.andThen((grid) -> {
+//					Group group = (Group) GridLanguageFactory.eINSTANCE.createGroup();
+//					System.out.println("group "+ group);
+//					grid.getGroups().add(group);
+//				});
+//				try
+//			      {
+//					this.kitchenToGrid.performAndPropagateSourceEdit(editGroupCreated);
+//			      } catch (Exception e)
+//			      {
+//			    	  this.failedSynchroChange.getGroupCreated().add(uiGroup);
+//			      }		
+//			}
+//		}
 
 		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel(), this.failedSynchroChange);
 		

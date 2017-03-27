@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 import org.moflon.tgg.algorithm.configuration.Configurator;
 import org.moflon.tgg.algorithm.datastructures.SynchronizationProtocol;
@@ -22,6 +23,7 @@ import KitchenToGridLanguage.KitchenToGridLanguagePackage;
 public class KitchenToGridSynchronizationHelper extends SynchronizationHelper {
 
 	private Collection<EObject> root = new ArrayList<>();
+	private Copier objectMapping; 
 	
 	public KitchenToGridSynchronizationHelper(String location) {
 		this.set = eMoflonEMFUtil.createDefaultResourceSet();
@@ -51,7 +53,7 @@ public class KitchenToGridSynchronizationHelper extends SynchronizationHelper {
 	      {
 	    	  //e.printStackTrace();
 	    	  rollback();
-	    	  throw new IllegalStateException("Delta is not consistent");
+	    	  throw new SynchronisationFailedException("Delta is not consistent", objectMapping);
 	      }
 	}
 
@@ -62,6 +64,10 @@ public class KitchenToGridSynchronizationHelper extends SynchronizationHelper {
 		copy.add(corr);
 		copy.add(protocol.save());
 		root = EcoreUtil.copyAll(copy);
+		
+		objectMapping = new Copier();
+		root = objectMapping.copyAll(copy);
+		objectMapping.copyReferences(); 
 	}
 	
 	private void rollback() {

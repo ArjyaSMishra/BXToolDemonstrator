@@ -18,11 +18,11 @@ public class UIGroup {
 	
 	public UIGroup(){
 		this.blocks = new ArrayList<Rectangle>();
-	    Random random = new Random();
-        // create a big random number - maximum is ffffff (hex) = 16777215 (dez)
-        int nextInt = random.nextInt(256*256*256);
-        // format it as hexadecimal string (with hashtag and leading zeros)
-        this.fillColor = String.format("#%06x", nextInt);
+//	    Random random = new Random();
+//        // create a big random number - maximum is ffffff (hex) = 16777215 (dez)
+//        int nextInt = random.nextInt(256*256*256);
+//        // format it as hexadecimal string (with hashtag and leading zeros)
+//        this.fillColor = String.format("#%06x", nextInt);
 	}
 
 	/**
