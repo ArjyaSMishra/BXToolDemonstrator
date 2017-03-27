@@ -16,17 +16,12 @@ Import projects from Git:
 (http://stackoverflow.com/questions/6760115/importing-a-github-project-into-eclipse)
 File -> Import -> Git -> Projects from Git > Clone URI
 
-1. Import benchmarx project
-   (URI: https://github.com/eMoflon/benchmarx.git)
-
-   Note: only import the project: core/Benchmarx
-
-2. Import eMoflon rules
+1. Import eMoflon rules
    (URI: https://github.com/ArjyaSMishra/eMoflon-Rules.git)
    
    Note: import all 3 projects: GridLanguage, KitchenLanguage, KitchenToGridLanguage
 
-3. Import Client and Adapter
+2. Import Client and Adapter
 
    (URI: https://github.com/ArjyaSMishra/BXToolDemonstrator.git)
 
@@ -34,22 +29,22 @@ File -> Import -> Git -> Projects from Git > Clone URI
 
    You will see the Project name on Project Explorer.
   
-4. After importing all 6 projects, check for the problems(if any). You might have to add the dependencies manually if missing.
+3. After importing all 6 projects, check for the problems(if any). You might have to add the dependencies manually if missing.
 
    Check for all 6 projects, Build path -> Configure build Path -> Deployment Assembly, there must be a row present for Plug-in Dependencies. If not, please add it.
    (You might have to do it for "Benchmarx" project as for other projects, it is already being added in .classpath file.)
 
-5. In Java EE perspective, Click on “Server” tab -> click on the link to create a new Sever -> Enter and Select the Tomcat server configured earlier -> Next -> Enter the Tomcat server path and JRE version -> Next -> Select the project name and add to the server and Finish
+4. In Java EE perspective, Click on “Server” tab -> click on the link to create a new Sever -> Enter and Select the Tomcat server configured earlier -> Next -> Enter the Tomcat server path and JRE version -> Next -> Select the project name and add to the server and Finish
 
    You will see a folder name “Servers” on Project Explorer
 
-6. Run the Project
+5. Run the Project
 
    Right click on Project -> Run As -> Run on Server -> select the Tomcat server and Finish
 
    Now you will be able to run the project on browser by entering http://localhost:8080/Client/GUI.jsp
    
-7. For small changes, Tomcat automatically build and push the changes while in running mode. Only you have to refresh the browser to see the effect of changes.
+6. For small changes, Tomcat automatically build and push the changes while in running mode. Only you have to refresh the browser to see the effect of changes.
    For big changes, changes in javascript file(logic.js) or if the automatic build is not working(sometimes), stop the server, clean and then start once again.   
 
 
