@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Shapes</title>
 <script src="js/fabric.js"></script>
-<script src="//code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
+<script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
 <link rel = "stylesheet" type = "text/css" href = "css/style.css" />
 </head>
 <body>
@@ -12,31 +12,28 @@
 <table>
 <tr>
 <td><canvas id="canvas" width="500" height="500" style="border:1px solid #000000"></canvas>
-Desired no of Blocks: <input type="text" id="arrayNumber" class="input-box" placeholder="Enter a number" />
-<button onclick="drawGrid()" id="grid_btn">
-Create Grid
+<input type="text" id="arrayNumber" class="input-box" placeholder="Enter a number" />
+<button onclick="reInit()" id="grid_btn">
+Refresh Grid
 </button>
 </td>
+<td><button type="submit" onClick="sychro()"><img src="assets/synchronize.jpg" width="30" height="30"/></button> </td>
 <td><canvas id="canvas1" width="500" height="500" style="border:1px solid #000000"></canvas>
-X: <input type="text" id="cursorx" class="input-box" placeholder="Click on canvas" />
-Y: <input type="text" id="cursory" class="input-box" placeholder="Click on canvas" />
+<input type="text" id="cursorx" class="input-box" placeholder="Click on canvas to add"/>
+<input type="text" id="cursory" class="input-box" placeholder="Click on canvas to add"/>
 <select id="objectSelect">
   <option value="Sink" selected>Sink</option>
   <option value="Table">Table</option>
 </select>
-<button onClick="addObject()">Add</button>
-<button onClick="deleteObject()">Delete</button>
+<button onClick="addObject()" class="button"><img src="assets/plus.jpg" width="10" height="10"/></button>
+<button onClick="deleteObject()" class="button"><img src="assets/minus.jpg" width="10" height="10"/></button>
 </td>
 <td>
 <h1 id="messageDialog" style="margin-left:30%;margin-right:auto;display:block;margin-top:0%;margin-bottom:0%"></h1>
+<h2 id="messageDialog1" style="margin-left:30%;margin-right:auto;display:block;margin-top:0%;margin-bottom:0%"></h2>
 </td>
 </tr>
-</table>
-
-<div style="width:100%;height:100%;position:absolute;vertical-align:middle;text-align:center;">
-    <button type="button" style="margin-left:30%;margin-right:auto;display:block;margin-top:2%;margin-bottom:0%">
-Synchronize</button> 
-</div>​
+</table>​
 
 <script src="js/logic.js"></script>
 

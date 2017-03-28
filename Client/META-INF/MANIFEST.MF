@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Client
 Bundle-SymbolicName: Client
 Bundle-Version: 1.0.0.qualifier
-Export-Package: bxtooldemo.ui.controllers,
- bxtooldemo.ui.core
+Export-Package: bxtooldemo.ui.controllers
 Require-Bundle: GridLanguage;bundle-version="1.0.0",
  KitchenLanguage;bundle-version="1.0.0",
  KitchenToGridLanguage;bundle-version="1.0.0",

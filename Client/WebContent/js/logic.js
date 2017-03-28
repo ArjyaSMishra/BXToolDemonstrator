@@ -9,7 +9,8 @@ var noOfBlocks;
 var KitItemsCreated = [];
 var KitItemsDeleted = [];
 var KitItemsMoved = [];
-var x = 510;
+var GroupCreated = [];
+var x = 562;
 var y = 10;
 
 window.onload = init;
@@ -93,16 +94,6 @@ function changeVisualize(uiModels) {
 	Workspace.clear();
 	if (uiModels!= null && uiModels.workspace.objects.length > 0) {
 		 //create items 
-//		for (var i = 0; i < uiModels.workspace.objects.length; i++) {
-//			Workspace.add(new fabric.Circle({
-//				radius : 10,
-//				fill : '#f55',
-//				left : uiModels.workspace.objects[i].posX,
-//				top : uiModels.workspace.objects[i].posY,
-//				subType: uiModels.workspace.objects[i].id.split('_')[0],
-//				id : uiModels.workspace.objects[i].id
-//			}));
-//		}
 		for (var i = 0; i < uiModels.workspace.objects.length; i++) {
 			if(uiModels.workspace.objects[i].type == 'Sink'){
 			    addSinkVisualize(uiModels, i);}
@@ -159,7 +150,7 @@ function changeVisualize(uiModels) {
 
 function addSink(objectType, object_counter){
 	fabric.Image.fromURL('assets/sink.jpg', function(img) {
-		var oImg = img.set({ left: x - 510, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+		var oImg = img.set({ left: x - 562, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
@@ -173,7 +164,7 @@ function addSinkVisualize(uiModels, val){
 
 function addTable(objectType, object_counter){
 	fabric.Image.fromURL('assets/table.jpg', function(img) {
-		var oImg = img.set({ left: x - 510, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+		var oImg = img.set({ left: x - 562, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
@@ -234,14 +225,7 @@ function drawGrid() {
 
 function addObject() {
 	var objectType = $("#objectSelect").val();
-//	Workspace.add(new fabric.Circle({
-//		radius : 10,
-//		fill : '#f55',
-//		left : x - 510,
-//		top : y - 10,
-//		subType: objectType,
-//		id : objectType + "_" + object_counter
-//	}));
+
 	if(objectType == "Sink"){
 	    addSink(objectType, object_counter);}
 	else {
@@ -250,7 +234,7 @@ function addObject() {
 	KitItemsCreated.push({
 		id : objectType + "_" + object_counter,
 		type : objectType,
-		posX : x - 510,
+		posX : x - 562,
 		posY : y - 10
 	});
 	object_counter++;
@@ -340,6 +324,10 @@ function handleMove(){
 			posY : Math.ceil(Workspace.getActiveObject().top)
 		});
 	}
+}
+
+function handleCreateGroup(){
+	
 }
 
 function showInfo(val) {
