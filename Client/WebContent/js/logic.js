@@ -43,7 +43,7 @@ function reInit() {
 
 function sychro() {
 	if(KitItemsCreated.length <= 0 && KitItemsDeleted.length <= 0 && KitItemsMoved.length <= 0){
-		$('#messageDialog').text("Nothing to propagate. Please Make some changes for the synchronization to happen.");
+		$('#messageDialog').text("Nothing to propagate. Please make some changes that can be synchronised.");
 	}
 	else{
 		$('#messageDialog').text("");
@@ -106,6 +106,10 @@ function changeVisualize(uiModels) {
 		for (var i = 0; i < uiModels.workspace.objects.length; i++) {
 			if(uiModels.workspace.objects[i].type == 'Sink'){
 			    addSinkVisualize(uiModels, i);}
+			else if(uiModels.workspace.objects[i].type == 'Window')
+				addWindowVisualize(uiModels, i);
+			else if((uiModels.workspace.objects[i].type == 'Door'))
+				addDoorVisualize(uiModels, i)
 			else {
 				addTableVisualize(uiModels, i);}
 		}
@@ -185,6 +189,34 @@ function addTableVisualize(uiModels, val){
         });
 }
 
+function addWindow(objectType, object_counter){
+	fabric.Image.fromURL('assets/window.png', function(img) {
+		var oImg = img.set({ left: x - 510, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+        Workspace.add(oImg);
+        });
+}
+
+function addWindowVisualize(uiModels, val){
+	fabric.Image.fromURL('assets/window.png', function(img) {
+		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].id.split('_')[0], id: uiModels.workspace.objects[val].id}).scale(0.1);
+        Workspace.add(oImg);
+        });
+}
+
+function addDoor(objectType, object_counter){
+	fabric.Image.fromURL('assets/door.png', function(img) {
+		var oImg = img.set({ left: x - 510, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+        Workspace.add(oImg);
+        });
+}
+
+function addDoorVisualize(uiModels, val){
+	fabric.Image.fromURL('assets/door.png', function(img) {
+		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].id.split('_')[0], id: uiModels.workspace.objects[val].id}).scale(0.1);
+        Workspace.add(oImg);
+        });
+}
+
 function drawGrid() {
 
 	var noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber")
@@ -244,6 +276,10 @@ function addObject() {
 //	}));
 	if(objectType == "Sink"){
 	    addSink(objectType, object_counter);}
+	else if(objectType == "Window")
+		addWindow(objectType, object_counter);
+	else if(objectType == "Door")
+		addDoor(objectType, object_counter);
 	else {
 		addTable(objectType, object_counter);}
 	

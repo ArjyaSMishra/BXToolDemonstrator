@@ -15,17 +15,17 @@
 <table>
 <tr>
 <td><canvas id="canvas" width="500" height="500" style="border:1px solid #000000"></canvas>
-Desired no of Blocks: <input type="text" id="arrayNumber" class="input-box" placeholder="Enter a number" />
+<input type="text" id="arrayNumber" class="input-box" placeholder="Enter a number" />
 <button onclick="reInit()" id="grid_btn">
-Create Grid
+Refresh Grid
 </button>
 </td>
 <td><canvas id="canvas1" width="500" height="500" style="border:1px solid #000000"></canvas>
-X: <input type="text" id="cursorx" class="input-box" placeholder="Click on canvas" />
-Y: <input type="text" id="cursory" class="input-box" placeholder="Click on canvas" />
 <select id="objectSelect">
   <option value="Sink" selected>Sink</option>
   <option value="Table">Table</option>
+  <option value="Window">Window</option>
+  <option value="Door">Door</option>
 </select>
 <button onClick="addObject()">Add</button>
 <button onClick="deleteObject()">Delete</button>
