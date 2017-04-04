@@ -16,11 +16,14 @@
 <button onclick="reInit()" id="grid_btn">
 Refresh Grid
 </button>
+<button onclick="undo()" id="grid_btn">
+Undo Changes
+</button>
 </td>
 <td><button type="submit" onClick="sychro()"><img src="assets/synchronize.jpg" width="30" height="30"/></button> </td>
 <td><canvas id="canvas1" width="500" height="500" style="border:1px solid #000000"></canvas>
-<input type="text" id="cursorx" class="input-box" placeholder="Click on canvas to add"/>
-<input type="text" id="cursory" class="input-box" placeholder="Click on canvas to add"/>
+<!-- <input type="text" id="cursorx" class="input-box" placeholder="Click on canvas to add"/>
+<input type="text" id="cursory" class="input-box" placeholder="Click on canvas to add"/> -->
 <select id="objectSelect">
   <option value="Sink" selected>Sink</option>
   <option value="Table">Table</option>

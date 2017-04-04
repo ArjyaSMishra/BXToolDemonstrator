@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import GridLanguage.Block;
 import GridLanguage.Grid;
 import GridLanguage.GridLanguageFactory;
+import GridLanguage.GridLanguagePackage;
 import GridLanguage.Group;
 import KitchenLanguage.Item;
 import KitchenLanguage.ItemSocket;
@@ -88,12 +89,16 @@ public class Analysis {
 		if (kitchen != null && kitchen.getItemSockets().size() > 0) {
 			
 			for (ItemSocket itemSocket : kitchen.getItemSockets()) {
+				System.out.println("item id: "+ itemSocket.getId());
+				if(itemSocket.getItem()!=null){
 					element = new Element();
+					System.out.println("item type: "+ itemSocket.getItem().eClass().getName());
 					element.setId(itemSocket.getId());
 					element.setPosX(itemSocket.getItem().getXPos());
 					element.setPosY(itemSocket.getItem().getYPos());
 					element.setType(itemSocket.getItem().eClass().getName());
 					workspaceAdapter.getObjects().add(element);
+				}
 			}
 			System.out.println("workspace adapter item size " + workspaceAdapter.getObjects().size());
 		}
@@ -225,7 +230,7 @@ public class Analysis {
 					item.setXPos(element.getPosX());
 					item.setYPos(element.getPosY());
 					System.out.println("item "+ item);
-					itemSocket.setItem(item);;
+					itemSocket.setItem(item);
 					kitchen.getItemSockets().add(itemSocket);
 				});
 				try
@@ -278,24 +283,67 @@ public class Analysis {
 			}
 		}
 		
-//		System.out.println("group list length before edit: " + change.getGroupCreated().size());
-//		if (change.getGroupCreated() != null && change.getGroupCreated().size() > 0) {
-//			for (UIGroup uiGroup : change.getGroupCreated()) {
-//				Consumer<Grid> editGroupCreated = gridEdit.andThen((grid) -> {
-//					Group group = (Group) GridLanguageFactory.eINSTANCE.createGroup();
-//					System.out.println("group "+ group);
-//					grid.getGroups().add(group);
-//				});
-//				try
-//			      {
-//					this.kitchenToGrid.performAndPropagateSourceEdit(editGroupCreated);
-//			      } catch (Exception e)
-//			      {
-//			    	  this.failedSynchroChange.getGroupCreated().add(uiGroup);
-//			      }		
-//			}
-//		}
-
+		System.out.println("create group list length before edit: " + change.getGroupCreated().size());
+		if (change.getGroupCreated() != null && change.getGroupCreated().size() > 0) {
+			for (UIGroup uiGroup : change.getGroupCreated()) {
+				Consumer<Grid> editGroupCreated = gridEdit.andThen((grid) -> {
+					Group group = (Group) GridLanguageFactory.eINSTANCE.createGroup();
+					System.out.println("group "+ group);
+					for(Rectangle rect : uiGroup.getBlocks()){
+						//Block block = (Block) GridLanguageFactory.eINSTANCE.create((EClass) GridLanguagePackage.eINSTANCE.getEClassifier("Block"));
+						Block block = (Block) GridLanguageFactory.eINSTANCE.createBlock();
+						block.setXIndex(rect.getxIndex());
+						block.setYIndex(rect.getyIndex());
+						group.getOccupies().add(block);
+					}
+					grid.getGroups().add(group);
+				});
+				try
+			      {
+					this.kitchenToGrid.performAndPropagateSourceEdit(editGroupCreated);
+			      } catch (SynchronisationFailedException e)
+			      {
+//			    	refreshOldMapping(e.getObjectMapping());
+//			    	this.failedSynchroChange.getCreated().add(element);
+			      }	
+			}
+		}
+		
+		System.out.println("delete group list length before edit: " + change.getGroupDeleted().size());
+		if (change.getGroupDeleted() != null && change.getGroupDeleted().size() > 0) {
+			for (UIGroup uiGroup : change.getGroupDeleted()) {
+				Consumer<Grid> editGroupDeleted = gridEdit.andThen((grid) -> {
+					Group matchGroup = null;
+					out:
+					for (Group group : grid.getGroups()){
+						for (Block block : group.getOccupies()){
+							if (block.getXIndex() == uiGroup.getBlocks().get(0).getxIndex() && block.getYIndex() == uiGroup.getBlocks().get(0).getyIndex()){
+								matchGroup = group;
+								break out;
+							}
+						}
+					}
+//					Group group =  grid.getGroups().stream().filter(x -> x.getOccupies().get(0).getXIndex() == (uiGroup.getBlocks().get(0).getxIndex())) 
+//							.filter(x -> x.getOccupies().get(0).getYIndex() == (uiGroup.getBlocks().get(0).getyIndex()))
+//						.findFirst().orElse(null);
+					System.out.println("group "+ matchGroup);
+				    EcoreUtil.delete(matchGroup);
+				});
+				try
+			      {
+					this.kitchenToGrid.performAndPropagateSourceEdit(editGroupDeleted);
+			      } catch (SynchronisationFailedException e)
+			      {
+//			    	refreshOldMapping(e.getObjectMapping());
+//			    	this.failedSynchroChange.getCreated().add(element);
+			      }	
+			}
+		}
+		
+		System.out.println("Grid blocksize: " + this.kitchenToGrid.getSourceModel().getBlockSize());
+		System.out.println("Grid noofblocks: " + this.kitchenToGrid.getSourceModel().getBlocks().size());
+		System.out.println("Grid noofgroups: " + this.kitchenToGrid.getSourceModel().getGroups().size());
+		System.out.println("Kitchen noofsockets: " + this.kitchenToGrid.getTargetModel().getItemSockets().size());
 		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel(), this.failedSynchroChange);
 		
 		return this.uiModelsAdapter;

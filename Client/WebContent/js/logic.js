@@ -9,7 +9,8 @@ var noOfBlocks;
 var KitItemsCreated = [];
 var KitItemsDeleted = [];
 var KitItemsMoved = [];
-var GroupCreated = [];
+var LayoutBlocksCreated = [];
+var LayoutBlocksDeleted = [];
 var x = 562;
 var y = 10;
 
@@ -20,6 +21,8 @@ function init() {
 	KitItemsCreated.length = 0;
 	KitItemsDeleted.length = 0;
 	KitItemsMoved.length = 0;
+	LayoutBlocksCreated.length = 0;
+	LayoutBlocksDeleted.length = 0;
 	noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber").val();
 	$.ajax({
 		url : 'InitController',
@@ -42,8 +45,28 @@ function reInit() {
 	drawGrid();
 }
 
+function undo() {
+	KitItemsCreated.length = 0;
+	KitItemsDeleted.length = 0;
+	KitItemsMoved.length = 0;
+	LayoutBlocksCreated.length = 0;
+	LayoutBlocksDeleted.length = 0;
+	propagateChanges();
+	$('#messageDialog').text("Changes undone.");
+}
+
 function sychro() {
-	if(KitItemsCreated.length <= 0 && KitItemsDeleted.length <= 0 && KitItemsMoved.length <= 0){
+	if((KitItemsCreated.length > 0 || KitItemsDeleted.length > 0 || KitItemsMoved.length > 0) && (LayoutBlocksCreated.length > 0 || LayoutBlocksDeleted.length > 0)){
+		KitItemsCreated.length = 0;
+		KitItemsDeleted.length = 0;
+		KitItemsMoved.length = 0;
+		LayoutBlocksCreated.length = 0;
+		LayoutBlocksDeleted.length = 0;
+		propagateChanges();
+		$('#messageDialog').text("You cannot make changes on both side.");
+		
+	}
+	else if(KitItemsCreated.length <= 0 && KitItemsDeleted.length <= 0 && KitItemsMoved.length <= 0 && LayoutBlocksCreated.length <= 0 && LayoutBlocksDeleted.length <= 0 ){
 		$('#messageDialog').text("Nothing to propagate. Please Make some changes for the synchronization to happen.");
 	}
 	else{
@@ -63,6 +86,8 @@ function propagateChanges(){
 			ItemsCreated : JSON.stringify(KitItemsCreated),
 			ItemsDeleted : JSON.stringify(KitItemsDeleted),
 			ItemsMoved : JSON.stringify(KitItemsMoved),
+			BlocksCreated: JSON.stringify(LayoutBlocksCreated),
+			BlocksDeleted: JSON.stringify(LayoutBlocksDeleted),
 		},
 		success : function(data) {
 			changeVisualize(data)
@@ -72,6 +97,8 @@ function propagateChanges(){
 	KitItemsCreated.length = 0;
 	KitItemsDeleted.length = 0;
 	KitItemsMoved.length = 0;
+	LayoutBlocksCreated.length = 0;
+	LayoutBlocksDeleted.length = 0;
 }
 
 function initVisualize(uiModels) {
@@ -210,6 +237,8 @@ function drawGrid() {
 				lockMovementY : true,
 				borderColor : 'transparent',
 				subType : 'block',
+				xPos: i,
+				yPos: j,
 				id : 'block_' + i + '_' + j
 			};
 			//var c = new fabric.Rect(gOptions);
@@ -242,6 +271,8 @@ function addObject() {
 	console.log("created array length "+ KitItemsCreated.length );
 	console.log("deleted array length "+ KitItemsDeleted.length);
 	console.log("moved array length "+ KitItemsMoved.length);
+	console.log("blocks created array length "+ LayoutBlocksCreated.length);
+	console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 }
 
 function deleteObject() {
@@ -252,6 +283,8 @@ function deleteObject() {
 	console.log("created array len "+ KitItemsCreated.length );
 	console.log("deleted array len "+ KitItemsDeleted.length);
 	console.log("moved array len "+ KitItemsMoved.length);
+	console.log("blocks created array length "+ LayoutBlocksCreated.length);
+	console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 }
 
 function handleDelete(){
@@ -326,8 +359,67 @@ function handleMove(){
 	}
 }
 
-function handleCreateGroup(){
+function handleCreateGroup(e, currentColor){
+	var blockExist = false;
 	
+	switch (currentColor) {
+	case 'transparent':
+		e.target.setFill("#000");
+		break;
+	case '#000':
+		e.target.setFill("#cc0000");
+		break;
+	case '#cc0000':
+		e.target.setFill("#ffff00");
+		break;
+	case '#ffff00':
+		e.target.setFill("#008000");
+		break;
+	case '#008000':
+		e.target.setFill("transparent");
+		break;
+	}
+	
+	//check if block already exists
+	for(var i = 0; i < LayoutBlocksCreated.length; i++) {
+	    if(LayoutBlocksCreated[i].xIndex == e.target.xPos && LayoutBlocksCreated[i].yIndex == e.target.yPos) {
+	    	blockExist = true;
+	        break;
+	    }
+	}
+	
+	if(!blockExist){
+		LayoutBlocksCreated.push({
+			//id : objectType + "_" + object_counter,
+			xIndex : e.target.xPos,
+			yIndex : e.target.yPos,
+			fillColor : e.target.fill
+		});
+	}
+}
+
+function handleDeleteGroup(e, currentColor){
+	var blockExist = false;
+	
+	//check if block already exists
+	for(var i = 0; i < LayoutBlocksDeleted.length; i++) {
+	    if(LayoutBlocksDeleted[i].xIndex == e.target.xPos && LayoutBlocksDeleted[i].yIndex == e.target.yPos) {
+	    	blockExist = true;
+	        break;
+	    }
+	}
+	
+	if(!blockExist){
+		e.target.set({
+	        opacity: 0.9
+	    });
+		LayoutBlocksDeleted.push({
+			//id : objectType + "_" + object_counter,
+			xIndex : e.target.xPos,
+			yIndex : e.target.yPos,
+			fillColor : currentColor
+		});
+	}
 }
 
 function showInfo(val) {
@@ -338,8 +430,8 @@ Layout.hoverCursor = 'pointer';
 Workspace.hoverCursor = 'pointer';
 
 Workspace.on('mouse:down', function(options) {
-	$("#cursorx").val(options.e.clientX);
-	$("#cursory").val(options.e.clientY);
+//	$("#cursorx").val(options.e.clientX);
+//	$("#cursory").val(options.e.clientY);
 	x = options.e.clientX;
 	y = options.e.clientY;
 });
@@ -379,34 +471,52 @@ Workspace.on('object:modified', function(e) {
 	console.log("created len "+ KitItemsCreated.length );
 	console.log("deleted len "+ KitItemsDeleted.length);
 	console.log("moved len "+ KitItemsMoved.length);
+	console.log("blocks created array length "+ LayoutBlocksCreated.length);
+	console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 	
 });
 
 Layout.on('mouse:down', function(e) {
+	console.log('current color: ' + e.target.fill );
+	var currentColor = e.target.fill;
 	if (e.target.get('subType') == 'block') {
 
 		console.log('block ' + e.target.id + ' was clicked');
-		var currentColor = e.target.fill;
+		//var currentColor = e.target.fill;
 
-		e.target.setFill("#cc0000");
-		switch (currentColor) {
-		case 'transparent':
-			e.target.setFill("#000");
-			break;
-		case '#000':
-			e.target.setFill("#cc0000");
-			break;
-		case '#cc0000':
-			e.target.setFill("#ffff00");
-			break;
-		case '#ffff00':
-			e.target.setFill("#008000");
-			break;
-		case '#008000':
-			e.target.setFill("transparent");
-			break;
+		//e.target.setFill("#cc0000");
+//		switch (currentColor) {
+//		case 'transparent':
+//			e.target.setFill("#000");
+//			break;
+//		case '#000':
+//			e.target.setFill("#cc0000");
+//			break;
+//		case '#cc0000':
+//			e.target.setFill("#ffff00");
+//			break;
+//		case '#ffff00':
+//			e.target.setFill("#008000");
+//			break;
+//		case '#008000':
+//			e.target.setFill("transparent");
+//			break;
+//		}
+		
+		if(currentColor == 'transparent') {
+			handleCreateGroup(e, currentColor);
 		}
+		else {
+			handleDeleteGroup(e, currentColor);
+		}
+			
 		Layout.renderAll();
+		
+		console.log("created len "+ KitItemsCreated.length );
+		console.log("deleted len "+ KitItemsDeleted.length);
+		console.log("moved len "+ KitItemsMoved.length);
+		console.log("blocks created array length "+ LayoutBlocksCreated.length);
+		console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 	}
 });
 
