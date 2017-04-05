@@ -13,6 +13,9 @@ var LayoutBlocksCreated = [];
 var LayoutBlocksDeleted = [];
 var x = 562;
 var y = 10;
+var scenario1= new Array("do 1", "do 2");
+var scenario2= new Array("do 3", "do 4");
+
 
 window.onload = init;
 
@@ -184,7 +187,7 @@ function addSink(objectType, object_counter){
 
 function addSinkVisualize(uiModels, val){
 	fabric.Image.fromURL('assets/sink.jpg', function(img) {
-		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].id.split('_')[0], id: uiModels.workspace.objects[val].id}).scale(0.1);
+		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].type, id: uiModels.workspace.objects[val].id}).scale(0.1);
         Workspace.add(oImg);
         });
 }
@@ -198,7 +201,7 @@ function addTable(objectType, object_counter){
 
 function addTableVisualize(uiModels, val){
 	fabric.Image.fromURL('assets/table.jpg', function(img) {
-		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].id.split('_')[0], id: uiModels.workspace.objects[val].id}).scale(0.1);
+		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].type, id: uiModels.workspace.objects[val].id}).scale(0.1);
         Workspace.add(oImg);
         });
 }
@@ -443,7 +446,7 @@ Workspace.on('mouse:move', function(options) {
 	};
 
 	if (options.target != null) {
-		showInfo(options.target.id);
+		showInfo(options.target.subType);
 	}
 });
 
@@ -519,5 +522,18 @@ Layout.on('mouse:down', function(e) {
 		console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 	}
 });
+
+function loadScenario(scenario){
+	var scenarioElement;
+	$('#itemList').text("");
+    for (i = 0; i < scenario.length; i++ ) {
+        // Create the <LI> element
+    	scenarioElement = document.createElement("LI");
+        // Add the array values between the <LI> tags
+    	scenarioElement.innerHTML = scenario[i];
+        // Append the <LI> to the bottom of the <UL> element
+        $('#itemList').append(scenarioElement);
+    }
+}
 
 Workspace.renderAll();

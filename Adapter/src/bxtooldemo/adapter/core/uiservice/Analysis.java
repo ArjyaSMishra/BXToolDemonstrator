@@ -290,10 +290,7 @@ public class Analysis {
 					Group group = (Group) GridLanguageFactory.eINSTANCE.createGroup();
 					System.out.println("group "+ group);
 					for(Rectangle rect : uiGroup.getBlocks()){
-						//Block block = (Block) GridLanguageFactory.eINSTANCE.create((EClass) GridLanguagePackage.eINSTANCE.getEClassifier("Block"));
-						Block block = (Block) GridLanguageFactory.eINSTANCE.createBlock();
-						block.setXIndex(rect.getxIndex());
-						block.setYIndex(rect.getyIndex());
+						Block block = grid.getBlocks().stream().filter(x -> x.getXIndex() == rect.getxIndex() && x.getYIndex() == rect.getyIndex()).findFirst().orElse(null);
 						group.getOccupies().add(block);
 					}
 					grid.getGroups().add(group);
@@ -303,8 +300,8 @@ public class Analysis {
 					this.kitchenToGrid.performAndPropagateSourceEdit(editGroupCreated);
 			      } catch (SynchronisationFailedException e)
 			      {
-//			    	refreshOldMapping(e.getObjectMapping());
-//			    	this.failedSynchroChange.getCreated().add(element);
+			    	refreshOldMapping(e.getObjectMapping());
+			    	//this.failedSynchroChange.getCreated().add(element);
 			      }	
 			}
 		}
@@ -334,7 +331,7 @@ public class Analysis {
 					this.kitchenToGrid.performAndPropagateSourceEdit(editGroupDeleted);
 			      } catch (SynchronisationFailedException e)
 			      {
-//			    	refreshOldMapping(e.getObjectMapping());
+			    	refreshOldMapping(e.getObjectMapping());
 //			    	this.failedSynchroChange.getCreated().add(element);
 			      }	
 			}
