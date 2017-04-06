@@ -3,3 +3,9 @@
     height:20px;
     width:40px;
 }
+a:hover, a:visited  { 
+    color: green;
+}
+a.active {
+     background-color:#C99;
+}

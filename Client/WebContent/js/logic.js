@@ -167,19 +167,19 @@ function changeVisualize(uiModels) {
 		var failedDeltaMsg = "Not Propagated changes are: ";
 		if(uiModels.failedDeltas.created.length > 0){
 			for(var i = 0; i < uiModels.failedDeltas.created.length; i++) {
-				failedDeltaMsg = failedDeltaMsg + " Creation of " + uiModels.failedDeltas.created[i].id;
+				failedDeltaMsg = failedDeltaMsg + " Creation of " + uiModels.failedDeltas.created[i].type;
 			}	
 		}
 		
 		if(uiModels.failedDeltas.deleted.length > 0){
 			for(var i = 0; i < uiModels.failedDeltas.deleted.length; i++) {
-				failedDeltaMsg = failedDeltaMsg + " Deletion of " + uiModels.failedDeltas.deleted[i].id;
+				failedDeltaMsg = failedDeltaMsg + " Deletion of " + uiModels.failedDeltas.deleted[i].type;
 			}	
 		}
 		
 		if(uiModels.failedDeltas.moved.length > 0){
 			for(var i = 0; i < uiModels.failedDeltas.moved.length; i++) {
-				failedDeltaMsg = failedDeltaMsg + " Movement of " + uiModels.failedDeltas.moved[i].id;
+				failedDeltaMsg = failedDeltaMsg + " Movement of " + uiModels.failedDeltas.moved[i].type;
 			}	
 		}
 		$('#messageDialog').text(failedDeltaMsg);
@@ -581,6 +581,12 @@ function loadScenario(scenario){
         $('#itemList').append(scenarioElement);
     }
 }
+
+var items = $("a");
+items.on("click",function(){
+  items.removeClass("active");
+  $(this).toggleClass("active");
+});
 
 function addGroupToDeleteGroup(colorBeforeChange){
 	

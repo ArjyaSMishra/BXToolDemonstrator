@@ -40,7 +40,8 @@ public class Analysis {
 	private UIModels uiModelsAdapter;
 	public static int blockArrayNo;
 	private Change failedSynchroChange;
-	private Map<Integer, String> groupColors = new HashMap();
+	private Map<Integer, String> groupColors;
+	private Map<String, String> blockColors;
 
 	public void initeMoflonTool(int blockArrayNo) {
 
@@ -48,6 +49,7 @@ public class Analysis {
 		Analysis.blockArrayNo = blockArrayNo;
 		this.kitchenToGrid.initiateSynchronisationDialogue();
 		kitchenToGrid.setConfigurator(new KitchenToGridConfigurator());
+		this.groupColors = new HashMap();
 	}
 
 	public UIModels getUIModels() {
@@ -75,7 +77,7 @@ public class Analysis {
 				for (Block block : group.getOccupies()) {
 					rect = new Rectangle();
 					rect.setId("block_"+block.getXIndex()+"_"+block.getYIndex());
-					uiGroup.setFillColor(getColorForGroup(group));
+					uiGroup.setFillColor(getColorForGroup(block, group));
 					uiGroup.getBlocks().add(rect);
 				}
 				layoutAdapter.getGroups().add(uiGroup);
@@ -112,13 +114,31 @@ public class Analysis {
 		return uiModelAdapter;
 	}
 	
-	public String getColorForGroup(Group group){
+	public String getColorForGroup(Block block, Group group){
 		String color = null;
+		Boolean groupColorExist = false;
 		
+		//Group-Color mapping already exists
 		for (Map.Entry<Integer, String> entry : this.groupColors.entrySet()){
 			if(group.hashCode() == entry.getKey()){
+				System.out.println("here");
+				groupColorExist = true;
 				return entry.getValue();
 			}
+		}
+		
+		//Group-color mapping for Group created by Forward Transformation(Create) 
+		if(!groupColorExist && this.blockColors.size() > 0){
+				for (Map.Entry<String, String> blockColor : this.blockColors.entrySet()){
+					System.out.println("here1111");
+					System.out.println(blockColor.getKey());
+					System.out.println(block.getXIndex()+"_"+block.getYIndex());
+					if(blockColor.getKey().equals(block.getXIndex()+"_"+block.getYIndex())){
+						System.out.println("here1");
+						this.groupColors.put(group.hashCode(), blockColor.getValue());
+						return blockColor.getValue();
+					}
+				}	
 		}
 		
 		Random random = new Random();
@@ -126,6 +146,8 @@ public class Analysis {
         int nextInt = random.nextInt(256*256*256);
         // format it as hexadecimal string (with hashtag and leading zeros)
         color = String.format("#%06x", nextInt);
+        
+        //Push Group-Color mapping for newly created Group()
 		this.groupColors.put(group.hashCode(), color );
 		
 		return color;
@@ -217,6 +239,7 @@ public class Analysis {
 		};
 		
 		this.failedSynchroChange = new Change();
+		this.blockColors = new HashMap();
 
 		System.out.println("create list length before edit: " + change.getCreated().size());
 		if (change.getCreated() != null && change.getCreated().size() > 0) {
@@ -290,6 +313,7 @@ public class Analysis {
 					Group group = (Group) GridLanguageFactory.eINSTANCE.createGroup();
 					System.out.println("group "+ group);
 					for(Rectangle rect : uiGroup.getBlocks()){
+						this.blockColors.put(rect.getxIndex()+"_"+rect.getyIndex(), uiGroup.getFillColor());
 						Block block = grid.getBlocks().stream().filter(x -> x.getXIndex() == rect.getxIndex() && x.getYIndex() == rect.getyIndex()).findFirst().orElse(null);
 						group.getOccupies().add(block);
 					}
