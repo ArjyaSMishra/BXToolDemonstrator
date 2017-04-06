@@ -2,8 +2,8 @@
  * 
  */
 
-var Layout = new fabric.Canvas('canvas');
-var Workspace = new fabric.Canvas('canvas1');
+var Layout = new fabric.Canvas('canvasLayout');
+var Workspace = new fabric.Canvas('canvasWorkspace');
 var object_counter;
 var noOfBlocks;
 var KitItemsCreated = [];
@@ -11,6 +11,8 @@ var KitItemsDeleted = [];
 var KitItemsMoved = [];
 var LayoutBlocksCreated = [];
 var LayoutBlocksDeleted = [];
+var previousClickedBlock = null;
+var lastAssignedColor = null;
 var x = 562;
 var y = 10;
 var scenario1= new Array("do 1", "do 2");
@@ -27,6 +29,9 @@ function init() {
 	LayoutBlocksCreated.length = 0;
 	LayoutBlocksDeleted.length = 0;
 	noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber").val();
+	previousClickedBlock = null;
+	lastAssignedColor = null;
+	$('#messageDialog').text("");
 	$.ajax({
 		url : 'InitController',
 		type : 'POST',
@@ -54,6 +59,8 @@ function undo() {
 	KitItemsMoved.length = 0;
 	LayoutBlocksCreated.length = 0;
 	LayoutBlocksDeleted.length = 0;
+	previousClickedBlock = null;
+	lastAssignedColor = null;
 	propagateChanges();
 	$('#messageDialog').text("Changes undone.");
 }
@@ -65,6 +72,8 @@ function sychro() {
 		KitItemsMoved.length = 0;
 		LayoutBlocksCreated.length = 0;
 		LayoutBlocksDeleted.length = 0;
+		previousClickedBlock = null;
+		lastAssignedColor = null;
 		propagateChanges();
 		$('#messageDialog').text("You cannot make changes on both side.");
 		
@@ -102,6 +111,8 @@ function propagateChanges(){
 	KitItemsMoved.length = 0;
 	LayoutBlocksCreated.length = 0;
 	LayoutBlocksDeleted.length = 0;
+	previousClickedBlock = null;
+	lastAssignedColor = null;
 }
 
 function initVisualize(uiModels) {
@@ -362,43 +373,23 @@ function handleMove(){
 	}
 }
 
-function handleCreateGroup(e, currentColor){
-	var blockExist = false;
-	
-	switch (currentColor) {
-	case 'transparent':
-		e.target.setFill("#000");
-		break;
-	case '#000':
-		e.target.setFill("#cc0000");
-		break;
-	case '#cc0000':
-		e.target.setFill("#ffff00");
-		break;
-	case '#ffff00':
-		e.target.setFill("#008000");
-		break;
-	case '#008000':
-		e.target.setFill("transparent");
-		break;
+function handleCreateGroup(e) {
+
+	// check if block already exists
+	for (var i = 0; i < LayoutBlocksCreated.length; i++) {
+		if (LayoutBlocksCreated[i].xIndex == e.target.xPos && LayoutBlocksCreated[i].yIndex == e.target.yPos) {
+			LayoutBlocksCreated.splice(i, 1);
+			break;
+		}
 	}
 	
-	//check if block already exists
-	for(var i = 0; i < LayoutBlocksCreated.length; i++) {
-	    if(LayoutBlocksCreated[i].xIndex == e.target.xPos && LayoutBlocksCreated[i].yIndex == e.target.yPos) {
-	    	blockExist = true;
-	        break;
-	    }
-	}
-	
-	if(!blockExist){
-		LayoutBlocksCreated.push({
-			//id : objectType + "_" + object_counter,
-			xIndex : e.target.xPos,
-			yIndex : e.target.yPos,
-			fillColor : e.target.fill
-		});
-	}
+    //add new entry
+	LayoutBlocksCreated.push({
+		// id : objectType + "_" + object_counter,
+		xIndex : e.target.xPos,
+		yIndex : e.target.yPos,
+		fillColor : e.target.fill
+	});
 }
 
 function handleDeleteGroup(e, currentColor){
@@ -426,7 +417,7 @@ function handleDeleteGroup(e, currentColor){
 }
 
 function showInfo(val) {
-	$('#messageDialog').text(val);
+	$('#messageHover').text(val);
 }
 
 Layout.hoverCursor = 'pointer';
@@ -451,7 +442,7 @@ Workspace.on('mouse:move', function(options) {
 });
 
 Workspace.on('mouse:out', function(e) {
-	$('#messageDialog').text("");
+	$('#messageHover').text("");
 });
 
 Workspace.on('object:added', function(e) {
@@ -480,40 +471,56 @@ Workspace.on('object:modified', function(e) {
 });
 
 Layout.on('mouse:down', function(e) {
-	console.log('current color: ' + e.target.fill );
-	var currentColor = e.target.fill;
+	var noOfClick = 1;
+	var newGeneratedColor = null;
 	if (e.target.get('subType') == 'block') {
-
+		var currentClickedBlock = e.target.id;
+		var colorBeforeChange = e.target.fill;
 		console.log('block ' + e.target.id + ' was clicked');
-		//var currentColor = e.target.fill;
-
-		//e.target.setFill("#cc0000");
-//		switch (currentColor) {
-//		case 'transparent':
-//			e.target.setFill("#000");
-//			break;
-//		case '#000':
-//			e.target.setFill("#cc0000");
-//			break;
-//		case '#cc0000':
-//			e.target.setFill("#ffff00");
-//			break;
-//		case '#ffff00':
-//			e.target.setFill("#008000");
-//			break;
-//		case '#008000':
-//			e.target.setFill("transparent");
-//			break;
-//		}
 		
-		if(currentColor == 'transparent') {
-			handleCreateGroup(e, currentColor);
+		if(previousClickedBlock != null && currentClickedBlock == previousClickedBlock )
+			noOfClick = 2;
+		
+		if (noOfClick == 1){
+			if(colorBeforeChange == 'transparent'){
+				newGeneratedColor = lastAssignedColor != null ? lastAssignedColor : genColor();
+				e.target.setFill(newGeneratedColor);
+				addToCreateGroup(e);
+			}
+			else if (colorBeforeChange != 'transparent' && blockExistinCreateGroup(e)){
+				e.target.setFill("transparent");
+				removeFromCreateGroup(e);
+			}
+			else if (colorBeforeChange != 'transparent' && e.target.opacity < 1){
+				removeGroupFromDeleteGroup(colorBeforeChange);
+			}
+			else if (colorBeforeChange != 'transparent' && !blockExistinCreateGroup(e)){
+				addGroupToDeleteGroup(colorBeforeChange);
+			}
 		}
-		else {
-			handleDeleteGroup(e, currentColor);
+		else if (noOfClick == 2){
+			if(colorBeforeChange == 'transparent'){
+				newGeneratedColor =  genColor();
+				e.target.setFill(newGeneratedColor);
+		       handleCreateGroup(e);   
+			}
+			else if (colorBeforeChange != 'transparent' && blockExistinCreateGroup(e)){
+				e.target.setFill("transparent");
+				removeFromCreateGroup(e);
+			}
+			else if (colorBeforeChange != 'transparent' && e.target.opacity < 1){
+				removeGroupFromDeleteGroup(colorBeforeChange);
+			}
+			else if (colorBeforeChange != 'transparent' && !blockExistinCreateGroup(e)) {
+				addGroupToDeleteGroup(colorBeforeChange);
+			}
+			noOfClick = 1;
 		}
 			
 		Layout.renderAll();
+		
+		previousClickedBlock = e.target.id;
+		lastAssignedColor = newGeneratedColor;
 		
 		console.log("created len "+ KitItemsCreated.length );
 		console.log("deleted len "+ KitItemsDeleted.length);
@@ -522,6 +529,45 @@ Layout.on('mouse:down', function(e) {
 		console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 	}
 });
+
+function blockExistinCreateGroup(e){
+	
+	//check if block already exists
+	for(var i = 0; i < LayoutBlocksCreated.length; i++) {
+	    if(LayoutBlocksCreated[i].xIndex == e.target.xPos && LayoutBlocksCreated[i].yIndex == e.target.yPos) {
+	    	return true;
+	    }
+	}
+	return false;
+}
+
+function addToCreateGroup(e){
+	
+	// add block
+	LayoutBlocksCreated.push({
+		//id : objectType + "_" + object_counter,
+		xIndex : e.target.xPos,
+		yIndex : e.target.yPos,
+		fillColor : e.target.fill
+	});
+}
+
+function removeFromCreateGroup(e){
+	
+	//remove block
+	if(LayoutBlocksCreated.length > 0){
+		for(var i = 0; i < LayoutBlocksCreated.length; i++) {
+		    if(LayoutBlocksCreated[i].xIndex == e.target.xPos && LayoutBlocksCreated[i].yIndex == e.target.yPos) {
+		    	LayoutBlocksCreated.splice(i, 1);
+		        break;
+		    }
+		}
+	}
+}
+
+function genColor(){
+	return '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+}
 
 function loadScenario(scenario){
 	var scenarioElement;
@@ -534,6 +580,45 @@ function loadScenario(scenario){
         // Append the <LI> to the bottom of the <UL> element
         $('#itemList').append(scenarioElement);
     }
+}
+
+function addGroupToDeleteGroup(colorBeforeChange){
+	
+	for(var i = 0; i < Layout._objects.length; i++) {
+		if (Layout._objects[i].fill == colorBeforeChange){
+			Layout._objects[i].set({
+		        opacity: 0.9
+		    });
+			
+			LayoutBlocksDeleted.push({
+				//id : objectType + "_" + object_counter,
+				xIndex : Layout._objects[i].xPos,
+				yIndex : Layout._objects[i].yPos,
+				fillColor : colorBeforeChange
+			});	
+		}
+	}
+}
+
+function removeGroupFromDeleteGroup(colorBeforeChange){
+	
+	for(var i = 0; i < Layout._objects.length; i++) {
+		if (Layout._objects[i].fill == colorBeforeChange){
+			Layout._objects[i].set({
+	        opacity: 1
+	    });
+			
+			//remove block
+			if(LayoutBlocksDeleted.length > 0){
+				for(var j = 0; j < LayoutBlocksDeleted.length; j++) {
+				    if(LayoutBlocksDeleted[j].xIndex == Layout._objects[i].xPos && LayoutBlocksDeleted[j].yIndex == Layout._objects[i].yPos) {
+				    	LayoutBlocksDeleted.splice(j, 1);
+				        break;
+				    }
+				}
+			}	
+		}
+	}
 }
 
 Workspace.renderAll();

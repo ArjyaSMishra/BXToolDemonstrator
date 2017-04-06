@@ -11,7 +11,7 @@
 
 <table>
 <tr>
-<td><canvas id="canvas" width="500" height="500" style="border:1px solid #000000"></canvas>
+<td><canvas id="canvasLayout" width="500" height="500" style="border:1px solid #000000"></canvas>
 <input type="text" id="arrayNumber" class="input-box" placeholder="Enter a number" />
 <button onclick="reInit()" id="grid_btn">
 Refresh Grid
@@ -21,7 +21,7 @@ Undo Changes
 </button>
 </td>
 <td><button type="submit" onClick="sychro()"><img src="assets/synchronize.jpg" width="30" height="30"/></button> </td>
-<td><canvas id="canvas1" width="500" height="500" style="border:1px solid #000000"></canvas>
+<td><canvas id="canvasWorkspace" width="500" height="500" style="border:1px solid #000000"></canvas>
 <!-- <input type="text" id="cursorx" class="input-box" placeholder="Click on canvas to add"/>
 <input type="text" id="cursory" class="input-box" placeholder="Click on canvas to add"/> -->
 <select id="objectSelect">
@@ -31,18 +31,16 @@ Undo Changes
 <button onClick="addObject()" class="button"><img src="assets/plus.jpg" width="10" height="10"/></button>
 <button onClick="deleteObject()" class="button"><img src="assets/minus.jpg" width="10" height="10"/></button>
 </td>
-<td>
-<h1 id="messageDialog" style="margin-left:30%;margin-right:auto;display:block;margin-top:0%;margin-bottom:0%"></h1>
-<h2 id="messageDialog1" style="margin-left:30%;margin-right:auto;display:block;margin-top:0%;margin-bottom:0%"></h2>
-</td>
-</tr>
-</table>
 
+<td>
+<div style="position:absolute;left:1080px; top:10px;">
 <table>
 <tr>
 <td>
 <a href='#' onclick="loadScenario(scenario1)">Scenario 1</a>
 </td>
+</tr>
+<tr>
 <td>
 <a href='#' onclick="loadScenario(scenario2)">Scenario 2</a>
 </td>
@@ -52,7 +50,31 @@ Undo Changes
 <ul id="itemList"></ul>
 </td>
 </tr>
+</table>
+</div>
+</td>
+</tr>
 </table>​
+
+<div style="position:absolute;left:550px; top:550px;">
+<table>
+<tr>
+<td>
+<h2 id="messageHover" style="margin-left:30%;margin-right:auto;display:block;margin-top:0%;margin-bottom:0%"></h2>
+</td>
+</tr>
+</table>
+</div>
+
+<div style="position:absolute;left:570px; top:550px;">
+<table>
+<tr>
+<td>
+<h3 id="messageDialog" style="margin-left:30%;margin-right:auto;display:block;margin-top:0%;margin-bottom:0%"></h3>
+</td>
+</tr>
+</table>
+</div>
 
 <script src="js/logic.js"></script>
 
