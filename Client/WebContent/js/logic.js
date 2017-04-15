@@ -14,7 +14,8 @@ var LayoutBlocksDeleted = [];
 var previousClickedBlock = null;
 var lastAssignedColor = null;
 var x = 562;
-var y = 10;
+var y = 28;
+var scenarioLinks = $("a");
 var scenario1= new Array("do 1", "do 2");
 var scenario2= new Array("do 3", "do 4");
 
@@ -32,6 +33,8 @@ function init() {
 	previousClickedBlock = null;
 	lastAssignedColor = null;
 	$('#messageDialog').text("");
+	$('#itemList').text("");
+	scenarioLinks.removeClass("active");
 	$.ajax({
 		url : 'InitController',
 		type : 'POST',
@@ -102,7 +105,7 @@ function propagateChanges(){
 			BlocksDeleted: JSON.stringify(LayoutBlocksDeleted),
 		},
 		success : function(data) {
-			changeVisualize(data)
+			changeVisualize(data);
 		}
 	});
 
@@ -138,8 +141,10 @@ function changeVisualize(uiModels) {
 		for (var i = 0; i < uiModels.workspace.objects.length; i++) {
 			if(uiModels.workspace.objects[i].type == 'Sink'){
 			    addSinkVisualize(uiModels, i);}
-			else {
+			else if(uiModels.workspace.objects[i].type == 'Table') {
 				addTableVisualize(uiModels, i);}
+			else {
+				addFridgeVisualize(uiModels, i);}
 		}
 	}
 	
@@ -191,7 +196,7 @@ function changeVisualize(uiModels) {
 
 function addSink(objectType, object_counter){
 	fabric.Image.fromURL('assets/sink.jpg', function(img) {
-		var oImg = img.set({ left: x - 562, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+		var oImg = img.set({ left: x - 562, top: y - 28, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
@@ -205,13 +210,27 @@ function addSinkVisualize(uiModels, val){
 
 function addTable(objectType, object_counter){
 	fabric.Image.fromURL('assets/table.jpg', function(img) {
-		var oImg = img.set({ left: x - 562, top: y - 10, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+		var oImg = img.set({ left: x - 562, top: y - 28, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
 
 function addTableVisualize(uiModels, val){
 	fabric.Image.fromURL('assets/table.jpg', function(img) {
+		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].type, id: uiModels.workspace.objects[val].id}).scale(0.1);
+        Workspace.add(oImg);
+        });
+}
+
+function addFridge(objectType, object_counter){
+	fabric.Image.fromURL('assets/fridge.jpg', function(img) {
+		var oImg = img.set({ left: x - 562, top: y - 28, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+        Workspace.add(oImg);
+        });
+}
+
+function addFridgeVisualize(uiModels, val){
+	fabric.Image.fromURL('assets/fridge.jpg', function(img) {
 		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].type, id: uiModels.workspace.objects[val].id}).scale(0.1);
         Workspace.add(oImg);
         });
@@ -268,17 +287,19 @@ function drawGrid() {
 
 function addObject() {
 	var objectType = $("#objectSelect").val();
-
+	
 	if(objectType == "Sink"){
 	    addSink(objectType, object_counter);}
-	else {
+	else if(objectType == "Table") {
 		addTable(objectType, object_counter);}
+	else {
+		addFridge(objectType, object_counter);}
 	
 	KitItemsCreated.push({
 		id : objectType + "_" + object_counter,
 		type : objectType,
 		posX : x - 562,
-		posY : y - 10
+		posY : y - 28
 	});
 	object_counter++;
 	
@@ -392,30 +413,6 @@ function handleCreateGroup(e) {
 	});
 }
 
-function handleDeleteGroup(e, currentColor){
-	var blockExist = false;
-	
-	//check if block already exists
-	for(var i = 0; i < LayoutBlocksDeleted.length; i++) {
-	    if(LayoutBlocksDeleted[i].xIndex == e.target.xPos && LayoutBlocksDeleted[i].yIndex == e.target.yPos) {
-	    	blockExist = true;
-	        break;
-	    }
-	}
-	
-	if(!blockExist){
-		e.target.set({
-	        opacity: 0.9
-	    });
-		LayoutBlocksDeleted.push({
-			//id : objectType + "_" + object_counter,
-			xIndex : e.target.xPos,
-			yIndex : e.target.yPos,
-			fillColor : currentColor
-		});
-	}
-}
-
 function showInfo(val) {
 	$('#messageHover').text(val);
 }
@@ -457,7 +454,7 @@ Workspace.on('object:removed', function(e) {
 	}
 });
 
-Workspace.on('object:modified', function(e) {
+Workspace.on('object:moving', function(e) {
 	handleMove();
 	console.log(e.target);
 	console.log(Workspace.getActiveObject());
@@ -582,9 +579,8 @@ function loadScenario(scenario){
     }
 }
 
-var items = $("a");
-items.on("click",function(){
-  items.removeClass("active");
+scenarioLinks.on("click",function(){
+	scenarioLinks.removeClass("active");
   $(this).toggleClass("active");
 });
 
@@ -593,7 +589,7 @@ function addGroupToDeleteGroup(colorBeforeChange){
 	for(var i = 0; i < Layout._objects.length; i++) {
 		if (Layout._objects[i].fill == colorBeforeChange){
 			Layout._objects[i].set({
-		        opacity: 0.9
+		        opacity: 0.5
 		    });
 			
 			LayoutBlocksDeleted.push({

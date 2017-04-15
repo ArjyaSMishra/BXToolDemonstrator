@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Shapes</title>
+<title>Kitchen-Grid Example</title>
 <script src="js/fabric.js"></script>
 <script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
 <link rel = "stylesheet" type = "text/css" href = "css/style.css" />
@@ -11,22 +11,25 @@
 
 <table>
 <tr>
-<td><canvas id="canvasLayout" width="500" height="500" style="border:1px solid #000000"></canvas>
+<td>Grid View
+<canvas id="canvasLayout" width="500" height="500" style="border:1px solid #000000"></canvas>
 <input type="text" id="arrayNumber" class="input-box" placeholder="Enter a number" />
 <button onclick="reInit()" id="grid_btn">
-Refresh Grid
+Start Fresh
 </button>
 <button onclick="undo()" id="grid_btn">
 Undo Changes
 </button>
 </td>
 <td><button type="submit" onClick="sychro()"><img src="assets/synchronize.jpg" width="30" height="30"/></button> </td>
-<td><canvas id="canvasWorkspace" width="500" height="500" style="border:1px solid #000000"></canvas>
+<td>Kitchen View
+<canvas id="canvasWorkspace" width="500" height="500" style="border:1px solid #000000"></canvas>
 <!-- <input type="text" id="cursorx" class="input-box" placeholder="Click on canvas to add"/>
 <input type="text" id="cursory" class="input-box" placeholder="Click on canvas to add"/> -->
 <select id="objectSelect">
   <option value="Sink" selected>Sink</option>
   <option value="Table">Table</option>
+  <option value="Fridge">Fridge</option>
 </select>
 <button onClick="addObject()" class="button"><img src="assets/plus.jpg" width="10" height="10"/></button>
 <button onClick="deleteObject()" class="button"><img src="assets/minus.jpg" width="10" height="10"/></button>

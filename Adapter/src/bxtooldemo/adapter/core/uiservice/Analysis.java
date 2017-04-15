@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -14,7 +15,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import GridLanguage.Block;
 import GridLanguage.Grid;
 import GridLanguage.GridLanguageFactory;
-import GridLanguage.GridLanguagePackage;
 import GridLanguage.Group;
 import KitchenLanguage.Item;
 import KitchenLanguage.ItemSocket;
@@ -48,7 +48,6 @@ public class Analysis {
 		this.kitchenToGrid = new KitchenToGrid();
 		Analysis.blockArrayNo = blockArrayNo;
 		this.kitchenToGrid.initiateSynchronisationDialogue();
-		kitchenToGrid.setConfigurator(new KitchenToGridConfigurator());
 		this.groupColors = new HashMap();
 	}
 
@@ -121,7 +120,6 @@ public class Analysis {
 		//Group-Color mapping already exists
 		for (Map.Entry<Integer, String> entry : this.groupColors.entrySet()){
 			if(group.hashCode() == entry.getKey()){
-				System.out.println("here");
 				groupColorExist = true;
 				return entry.getValue();
 			}
@@ -130,11 +128,7 @@ public class Analysis {
 		//Group-color mapping for Group created by Forward Transformation(Create) 
 		if(!groupColorExist && this.blockColors.size() > 0){
 				for (Map.Entry<String, String> blockColor : this.blockColors.entrySet()){
-					System.out.println("here1111");
-					System.out.println(blockColor.getKey());
-					System.out.println(block.getXIndex()+"_"+block.getYIndex());
 					if(blockColor.getKey().equals(block.getXIndex()+"_"+block.getYIndex())){
-						System.out.println("here1");
 						this.groupColors.put(group.hashCode(), blockColor.getValue());
 						return blockColor.getValue();
 					}
@@ -231,7 +225,7 @@ public class Analysis {
 		return this.uiModelsAdapter;
 	}
 	
-	public UIModels getUIModelsAfterAtomicDeltaPropagation(Change change) {
+	public UIModels getUIModelsAfterAtomicDeltaPropagation(Change change, Function<List<String>, String> askUserCallback) {
 		Consumer<Kitchen> kitchenEdit = (kitchen) -> {
 		};
 		
@@ -321,6 +315,7 @@ public class Analysis {
 				});
 				try
 			      {
+					kitchenToGrid.setConfigurator(new KitchenToGridConfigurator(askUserCallback));
 					this.kitchenToGrid.performAndPropagateSourceEdit(editGroupCreated);
 			      } catch (SynchronisationFailedException e)
 			      {

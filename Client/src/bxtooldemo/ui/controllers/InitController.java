@@ -132,11 +132,19 @@ public class InitController extends HttpServlet {
 	    change.setGroupCreated(createdGroups);
 	    change.setGroupDeleted(deletedGroups);
 	    
-		this.uimodels = this.adapterAnalysis.getUIModelsAfterAtomicDeltaPropagation(change);
+		this.uimodels = this.adapterAnalysis.getUIModelsAfterAtomicDeltaPropagation(change, (choices) -> this.askUser(choices, request, response));
 		
 	}
     
-    public List<UIGroup> formGroups(List<Rectangle> Blocks){
+    private String askUser(List<String> choices, HttpServletRequest request, HttpServletResponse response) {
+    	// TODO:  Open up a new browser window and get choice from user
+    	for (String value : choices) {
+    	System.out.println("choices: " + value);
+    	}
+		return choices.get(0);
+	}
+
+	public List<UIGroup> formGroups(List<Rectangle> Blocks){
     	List<UIGroup> uiGroups = new ArrayList<UIGroup>();
     	List<String> colorAll = new ArrayList<String>();
     	List<Rectangle> sameColorRect;
