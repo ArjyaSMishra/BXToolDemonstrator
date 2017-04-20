@@ -11,6 +11,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 import org.moflon.tgg.algorithm.configuration.Configurator;
 import org.moflon.tgg.algorithm.datastructures.SynchronizationProtocol;
+import org.moflon.tgg.algorithm.synchronization.BackwardSynchronizer;
+import org.moflon.tgg.algorithm.synchronization.ForwardSynchronizer;
 import org.moflon.tgg.algorithm.synchronization.SynchronizationHelper;
 import org.moflon.tgg.algorithm.synchronization.Synchronizer;
 import org.moflon.tgg.runtime.CorrespondenceModel;
@@ -44,14 +46,12 @@ public class KitchenToGridSynchronizationHelper extends SynchronizationHelper {
 		EcoreUtil.resolveAll(rules);
 	}
 	
-	@Override
-	protected void performSynchronization(Synchronizer synchronizer) {
+	private void performSynchronization(ContinuableSynchronizer synchronizer) {
 		 try
 	      {
 	         synchronizer.synchronize();
 	      } catch (Exception e)
 	      {
-	    	  //e.printStackTrace();
 	    	  rollback();
 	    	  throw new SynchronisationFailedException("Delta is not consistent", objectMapping);
 	      }
@@ -92,5 +92,35 @@ public class KitchenToGridSynchronizationHelper extends SynchronizationHelper {
 		protocol.load((PrecedenceStructure) oldProt);
 		
 		System.out.println("Performed rollback!");
+	}
+	
+	@Override
+	public void integrateForward() {
+		 if (src == null)
+	         throw new IllegalArgumentException("Source model must be set");
+
+	      init();
+	      establishForwardDelta();
+	      establishTranslationProtocol();
+
+	      performSynchronization(new ForwardContinuableSynchronizer(corr, delta, protocol, configurator, determineLookupMethods(), tempOutputContainer));
+
+	      if (trg == null)
+	         trg = corr.getTarget();
+	}
+	
+	@Override
+	public void integrateBackward() {
+		 if (trg == null)
+	         throw new IllegalArgumentException("Target model must be set");
+
+	      init();
+	      establishBackwardDelta();
+	      establishTranslationProtocol();
+
+	      performSynchronization(new BackwardContinuableSynchronizer(corr, delta, protocol, configurator, determineLookupMethods(), tempOutputContainer));
+
+	      if (src == null)
+	         src = corr.getSource();
 	}
 }

@@ -17,7 +17,7 @@ import KitchenToGridLanguage.KitchenToGridLanguagePackage;
 import bxtooldemo.adapter.core.BXTool;
 import bxtooldemo.adapter.core.uiservice.Analysis;
 
-public class KitchenToGrid implements BXTool<Grid, Kitchen, Configurator> {
+public class KitchenToGrid implements BXTool<Grid, Kitchen, ContinuationConfigurator> {
 	
 	private KitchenToGridSynchronizationHelper helper;
 
@@ -36,7 +36,7 @@ public class KitchenToGrid implements BXTool<Grid, Kitchen, Configurator> {
 		//for accessing jar
 		URL location = KitchenToGridLanguagePackage.class.getProtectionDomain().getCodeSource().getLocation();
 		helper = new KitchenToGridSynchronizationHelper(location.getFile());
-
+		
 		Resource r = helper.getResourceSet().createResource(URI.createURI("sourceModel"));
 		
 		Grid gridRoot = initialiseGrid();
@@ -147,7 +147,7 @@ public class KitchenToGrid implements BXTool<Grid, Kitchen, Configurator> {
 	}
 
 	@Override
-	public void setConfigurator(Configurator configurator) {
+	public void setConfigurator(ContinuationConfigurator configurator) {
 		helper.setConfigurator(configurator);
 	}
 
@@ -160,6 +160,4 @@ public class KitchenToGrid implements BXTool<Grid, Kitchen, Configurator> {
 	public Kitchen getTargetModel() {
 		return (Kitchen) helper.getTrg();
 	}
-	
-
 }

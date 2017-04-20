@@ -13,6 +13,7 @@ var LayoutBlocksCreated = [];
 var LayoutBlocksDeleted = [];
 var previousClickedBlock = null;
 var lastAssignedColor = null;
+var GuiUserChoice = null;
 var x = 562;
 var y = 28;
 var scenarioLinks = $("a");
@@ -29,9 +30,13 @@ function init() {
 	KitItemsMoved.length = 0;
 	LayoutBlocksCreated.length = 0;
 	LayoutBlocksDeleted.length = 0;
+	if (isNaN($("#arrayNumber").val())){
+		$("#arrayNumber").val("");
+	}
 	noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber").val();
 	previousClickedBlock = null;
 	lastAssignedColor = null;
+	GuiUserChoice = null;
 	$('#messageDialog').text("");
 	$('#itemList').text("");
 	scenarioLinks.removeClass("active");
@@ -64,6 +69,7 @@ function undo() {
 	LayoutBlocksDeleted.length = 0;
 	previousClickedBlock = null;
 	lastAssignedColor = null;
+	GuiUserChoice = null;
 	propagateChanges();
 	$('#messageDialog').text("Changes undone.");
 }
@@ -77,6 +83,7 @@ function sychro() {
 		LayoutBlocksDeleted.length = 0;
 		previousClickedBlock = null;
 		lastAssignedColor = null;
+		GuiUserChoice = null;
 		propagateChanges();
 		$('#messageDialog').text("You cannot make changes on both side.");
 		
@@ -102,10 +109,16 @@ function propagateChanges(){
 			ItemsDeleted : JSON.stringify(KitItemsDeleted),
 			ItemsMoved : JSON.stringify(KitItemsMoved),
 			BlocksCreated: JSON.stringify(LayoutBlocksCreated),
-			BlocksDeleted: JSON.stringify(LayoutBlocksDeleted),
+			BlocksDeleted: JSON.stringify(LayoutBlocksDeleted)
 		},
 		success : function(data) {
-			changeVisualize(data);
+			if(data.userChoices.length > 0){
+				userChoiceVisualize(data);
+			}
+			else{
+				changeVisualize(data);
+			}
+			
 		}
 	});
 
@@ -116,6 +129,45 @@ function propagateChanges(){
 	LayoutBlocksDeleted.length = 0;
 	previousClickedBlock = null;
 	lastAssignedColor = null;
+	GuiUserChoice = null;
+}
+
+function propagateUserChoices(){
+	$.ajax({
+		url : 'InitController',
+		type : 'POST',
+		dataType : 'json',
+		data : {
+			userChoice : 1,
+			UserChoice : JSON.stringify(GuiUserChoice),
+		},
+		success : function(data) {
+			if(data.userChoices.length > 0){
+				userChoiceVisualize(data);
+			}
+			else{
+				changeVisualize(data);
+			}
+		}
+	});
+	
+	GuiUserChoice = null;
+}
+
+function userChoiceVisualize(uiModels) {
+	var options = "";
+	var selection = 0;
+	for (var i = 0; i < uiModels.userChoices.length; i++) {
+		options = options + " " + i + " for " + uiModels.userChoices[i];
+	}
+	selection = prompt("Please enter" + options);
+	
+	if(selection === null || selection > (uiModels.userChoices.length - 1))
+		GuiUserChoice = uiModels.userChoices[0];
+	else
+	    GuiUserChoice = uiModels.userChoices[selection];
+	
+	propagateUserChoices();
 }
 
 function initVisualize(uiModels) {
@@ -166,9 +218,13 @@ function changeVisualize(uiModels) {
 			}
 		}
 	}
-	
+	console.log(uiModels.failedDeltas);
 	//Visualize Failed Deltas
-	if (uiModels!= null && uiModels.failedDeltas!= null && (uiModels.failedDeltas.created.length > 0 || uiModels.failedDeltas.deleted.length > 0 || uiModels.failedDeltas.moved.length > 0) ) {
+	if (uiModels!= null && uiModels.failedDeltas!= null && (uiModels.failedDeltas.created.length > 0 
+			|| uiModels.failedDeltas.deleted.length > 0 
+			|| uiModels.failedDeltas.moved.length > 0
+			|| uiModels.failedDeltas.groupCreated.length > 0
+			|| uiModels.failedDeltas.groupDeleted.length > 0) ) {
 		var failedDeltaMsg = "Not Propagated changes are: ";
 		if(uiModels.failedDeltas.created.length > 0){
 			for(var i = 0; i < uiModels.failedDeltas.created.length; i++) {
@@ -185,6 +241,18 @@ function changeVisualize(uiModels) {
 		if(uiModels.failedDeltas.moved.length > 0){
 			for(var i = 0; i < uiModels.failedDeltas.moved.length; i++) {
 				failedDeltaMsg = failedDeltaMsg + " Movement of " + uiModels.failedDeltas.moved[i].type;
+			}	
+		}
+		
+		if(uiModels.failedDeltas.groupCreated.length > 0){
+			for(var i = 0; i < uiModels.failedDeltas.groupCreated.length; i++) {
+				failedDeltaMsg = failedDeltaMsg + " Creation of Group";
+			}	
+		}
+		
+		if(uiModels.failedDeltas.groupDeleted.length > 0){
+			for(var i = 0; i < uiModels.failedDeltas.groupDeleted.length; i++) {
+				failedDeltaMsg = failedDeltaMsg + " Deletion of Group";
 			}	
 		}
 		$('#messageDialog').text(failedDeltaMsg);

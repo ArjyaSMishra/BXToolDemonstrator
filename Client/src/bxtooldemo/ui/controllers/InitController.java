@@ -74,10 +74,15 @@ public class InitController extends HttpServlet {
 			propagateChanges(request, response, gson);
 		}
 		
+        if (request.getParameter("userChoice") != null) {
+			
+			propagateUserChoice(request, response, gson);
+		}
+		
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().println( new Gson().toJson(this.uimodels));	
 	}
-	
+
 	public void initSetup(HttpServletRequest request, HttpServletResponse response, Gson gson){
 		
 		int blockArrayNo;
@@ -132,16 +137,14 @@ public class InitController extends HttpServlet {
 	    change.setGroupCreated(createdGroups);
 	    change.setGroupDeleted(deletedGroups);
 	    
-		this.uimodels = this.adapterAnalysis.getUIModelsAfterAtomicDeltaPropagation(change, (choices) -> this.askUser(choices, request, response));
-		
+		this.uimodels = this.adapterAnalysis.getUIModelsAfterAtomicDeltaPropagation(change);	
 	}
     
-    private String askUser(List<String> choices, HttpServletRequest request, HttpServletResponse response) {
-    	// TODO:  Open up a new browser window and get choice from user
-    	for (String value : choices) {
-    	System.out.println("choices: " + value);
-    	}
-		return choices.get(0);
+    private void propagateUserChoice(HttpServletRequest request, HttpServletResponse response, Gson gson) {
+		String UserChoice;
+		UserChoice = gson.fromJson(request.getParameter("UserChoice"), new TypeToken<String>(){}.getType());
+		
+		this.uimodels = this.adapterAnalysis.continueSynchronisation(UserChoice);
 	}
 
 	public List<UIGroup> formGroups(List<Rectangle> Blocks){

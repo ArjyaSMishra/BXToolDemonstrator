@@ -1,33 +1,54 @@
 package bxtooldemo.adapter.core.implementations.emoflon;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.moflon.tgg.algorithm.configuration.Configurator;
 import org.moflon.tgg.algorithm.configuration.RuleResult;
+import org.moflon.tgg.runtime.IsApplicableMatch;
 
-public class KitchenToGridConfigurator implements Configurator {
-	private Function<List<String>, String> callback;
-
-	public KitchenToGridConfigurator(Function<List<String>, String> askUserCallback) {
-		callback = askUserCallback;
-	}
-
+public class KitchenToGridConfigurator implements ContinuationConfigurator {
+	
+	private Collection<RuleResult> alternatives = new ArrayList<>();
+	private Optional<Consumer<IsApplicableMatch>> continuation = Optional.empty();
+	
 	@Override
-	public RuleResult chooseOne(Collection<RuleResult> alternatives) {
-		List<String> choices = alternatives.stream()
-										   .map(rr -> rr.getRule())
-										   .collect(Collectors.toList());
-		String chosenRule = getUsersChoice(choices);
-		return alternatives.stream()
-				           .filter(rr -> rr.isRule(chosenRule))
-				           .findFirst()
-				           .orElseThrow(() -> new IllegalStateException());
+	public void chooseOneAndContinue(Collection<RuleResult> alternatives, Consumer<IsApplicableMatch> continuation) {
+		this.alternatives = alternatives;
+		this.continuation = Optional.of(continuation);
+		
+		// TODO: Remove once this is working
+//		System.out.println("alternatives:");
+//		System.out.println(alternatives.stream().map(RuleResult::getRule).collect(Collectors.joining("\n")));
+//		continueSynchronisation(alternatives.iterator().next().getRule());
+	}
+	
+	@Override
+	public boolean hasContinuation(){
+		return continuation.isPresent();
+	}
+	
+	@Override
+	public List<String> getChoices(){
+		return alternatives.stream().map(rr -> rr.getRule()).collect(Collectors.toList());
+	}
+	
+	@Override
+	public void continueSynchronisation(String decision){
+		RuleResult choice = alternatives.stream()
+				.filter(rr -> rr.isRule(decision))
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("I could not find " + decision + " as an option."));
+		
+		continuation.ifPresent(cnt -> cnt.accept(choice.anyMatch()));
+		removeContinuation();
 	}
 
-	private String getUsersChoice(List<String> choices) {
-		return callback.apply(choices);
+	private void removeContinuation() {
+		continuation = Optional.empty();
+		alternatives.clear();
 	}
 }

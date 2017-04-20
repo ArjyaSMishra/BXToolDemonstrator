@@ -1,11 +1,11 @@
 package bxtooldemo.adapter.core.uiservice;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -34,40 +34,84 @@ import bxtooldemo.adapter.uimodels.Workspace;
 
 public class Analysis {
 
+	private KitchenToGridConfigurator configurator;
 	private KitchenToGrid kitchenToGrid;
-	private Kitchen kitchen;
-	private Grid grid;
 	private UIModels uiModelsAdapter;
 	public static int blockArrayNo;
 	private Change failedSynchroChange;
 	private Map<Integer, String> groupColors;
 	private Map<String, String> blockColors;
+	private Change change;
+	private List<Element> createItemstoRemove;
+	private List<Element> deleteItemstoRemove;
+	private List<Element> movedItemstoRemove;
+	private List<UIGroup> grpCreatedtoRemove;
+	private List<UIGroup> grpDeletedtoRemove;
 
 	public void initeMoflonTool(int blockArrayNo) {
-
-		this.kitchenToGrid = new KitchenToGrid();
+		kitchenToGrid = new KitchenToGrid();
 		Analysis.blockArrayNo = blockArrayNo;
-		this.kitchenToGrid.initiateSynchronisationDialogue();
-		this.groupColors = new HashMap();
+		configurator = new KitchenToGridConfigurator();
+		kitchenToGrid.initiateSynchronisationDialogue();
+		kitchenToGrid.setConfigurator(configurator);
+		groupColors = new HashMap();
+		blockColors = new HashMap();
+		failedSynchroChange = new Change();
+		change = new Change();
+		createItemstoRemove = new ArrayList<>();
+		deleteItemstoRemove = new ArrayList<>();
+		movedItemstoRemove = new ArrayList<>();
+		grpCreatedtoRemove = new ArrayList<>();
+		grpDeletedtoRemove = new ArrayList<>();
 	}
 
 	public UIModels getUIModels() {
-
-		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(),
-				this.kitchenToGrid.getSourceModel(), this.failedSynchroChange);
-
-		return this.uiModelsAdapter;
+		return convertToUIModels();
+	}
+	
+	public UIModels continueSynchronisation(String decision){
+		
+		// TODO:  Keep pending changes as a class variable, use saved set of changes to continue here
+		// TODO:  Remember which change element caused the pause.  
+		
+		configurator.continueSynchronisation(decision);
+		
+		// TODO: Continue process as normal (with the next change element)
+		return getUIModelsAfterAtomicDeltaPropagation(change); 
 	}
 
-	public UIModels convertToUIModels(Kitchen kitchen, Grid grid, Change failedSynchroChange) {
+	//TODO  Indicate in return value, if the sync process is finished or if user decisions are required
+	//TODO Ask configurator to decide this
+	private UIModels convertToUIModels() {
 
 		Layout layoutAdapter = new Layout();
 		Workspace workspaceAdapter = new Workspace();
 		UIModels uiModelAdapter = new UIModels();
+		Grid grid = this.kitchenToGrid.getSourceModel();
+		Kitchen kitchen = this.kitchenToGrid.getTargetModel();
 		UIGroup uiGroup;
 		Rectangle rect;
 		Element element;
-
+		
+		//update the change
+		change.getCreated().removeAll(createItemstoRemove);
+		createItemstoRemove.clear();
+		change.getDeleted().removeAll(deleteItemstoRemove);
+		deleteItemstoRemove.clear();
+		change.getMoved().removeAll(movedItemstoRemove);
+		movedItemstoRemove.clear();
+		change.getGroupCreated().removeAll(grpCreatedtoRemove);
+		grpCreatedtoRemove.clear();
+		change.getGroupDeleted().removeAll(grpDeletedtoRemove);
+		grpDeletedtoRemove.clear();
+		
+		//For user choices
+		if (configurator != null && configurator.getChoices().size() > 0) {
+			uiModelAdapter.setUserChoices(configurator.getChoices());
+			return uiModelAdapter;
+		}
+		
+		
 		// layout conversion
 		layoutAdapter.setGridSize(grid.getBlockSize());
 		if (grid != null && grid.getGroups().size() > 0) {
@@ -104,16 +148,16 @@ public class Analysis {
 			System.out.println("workspace adapter item size " + workspaceAdapter.getObjects().size());
 		}
 		
-
 		// setting the UIModels
 		uiModelAdapter.setLayout(layoutAdapter);
 		uiModelAdapter.setWorkspace(workspaceAdapter);
 		uiModelAdapter.setFailedDeltas(failedSynchroChange);
-
+		failedSynchroChange = new Change();
+		
 		return uiModelAdapter;
 	}
 	
-	public String getColorForGroup(Block block, Group group){
+	private String getColorForGroup(Block block, Group group){
 		String color = null;
 		Boolean groupColorExist = false;
 		
@@ -147,7 +191,7 @@ public class Analysis {
 		return color;
 	}
 	
-	public void refreshOldMapping(Copier objectMapping){
+	private void refreshOldMapping(Copier objectMapping){
 		String color = null;
 		Map<Integer, String> groupColors_new = new HashMap();
 		
@@ -162,78 +206,14 @@ public class Analysis {
 		this.groupColors.clear();
 		this.groupColors = groupColors_new;
 	}
-
-	public Consumer<Kitchen> convertDeltaToEdit(Change change) {
-		Consumer<Kitchen> edit = (kitchen) -> {
-		};
-
-		System.out.println("create list length before edit: " + change.getCreated().size());
-		if (change.getCreated() != null && change.getCreated().size() > 0) {
-			for (Element element : change.getCreated()) {
-				edit = edit.andThen((kitchen) -> {
-					String type = element.getType();
-					EClass eClass = (EClass) KitchenLanguagePackage.eINSTANCE.getEClassifier(type);
-					ItemSocket itemSocket = KitchenLanguageFactory.eINSTANCE.createItemSocket();
-					Item item = (Item) KitchenLanguageFactory.eINSTANCE.create(eClass);
-					itemSocket.setId(element.getId());
-					item.setXPos(element.getPosX());
-					item.setYPos(element.getPosY());
-					System.out.println("item "+ item);
-					itemSocket.setItem(item);;
-					kitchen.getItemSockets().add(itemSocket);
-				});
-			}
-		}
-
-		System.out.println("delete list length before edit: " + change.getDeleted().size());
-		if (change.getDeleted() != null && change.getDeleted().size() > 0) {
-			for (Element element : change.getDeleted()) {
-				edit = edit.andThen((kitchen) -> {
-					ItemSocket itemSocket =  kitchen.getItemSockets().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
-					System.out.println("item "+ itemSocket);
-				    EcoreUtil.delete(itemSocket);
-				});
-			}
-		}
-		
-		System.out.println("moved list length before edit: " + change.getMoved().size());
-		if (change.getMoved() != null && change.getMoved().size() > 0) {
-			for (Element element : change.getMoved()) {
-				edit = edit.andThen((kitchen) -> {
-					ItemSocket itemSocket = kitchen.getItemSockets().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
-					System.out.println("item "+ itemSocket);
-					itemSocket.getItem().setXPos(element.getPosX());
-					itemSocket.getItem().setYPos(element.getPosY());
-				});
-			}
-		}
-
-		return edit;
-	}
-
-	public UIModels getUIModelsAfterChange(Change change) {
-
-		this.kitchenToGrid.performAndPropagateTargetEdit(convertDeltaToEdit(change));
-
-		System.out.println("Grid blocksize: " + this.kitchenToGrid.getSourceModel().getBlockSize());
-		System.out.println("Grid noofblocks: " + this.kitchenToGrid.getSourceModel().getBlocks().size());
-		System.out.println("Grid noofgroups: " + this.kitchenToGrid.getSourceModel().getGroups().size());
-		System.out.println("Kitchen noofitems: " + this.kitchenToGrid.getTargetModel().getItemSockets().size());
-
-		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel(), this.failedSynchroChange);
-
-		return this.uiModelsAdapter;
-	}
 	
-	public UIModels getUIModelsAfterAtomicDeltaPropagation(Change change, Function<List<String>, String> askUserCallback) {
+	public UIModels getUIModelsAfterAtomicDeltaPropagation(Change changeFromGui) {
+		change = changeFromGui;
 		Consumer<Kitchen> kitchenEdit = (kitchen) -> {
 		};
 		
 		Consumer<Grid> gridEdit = (grid) -> {
 		};
-		
-		this.failedSynchroChange = new Change();
-		this.blockColors = new HashMap();
 
 		System.out.println("create list length before edit: " + change.getCreated().size());
 		if (change.getCreated() != null && change.getCreated().size() > 0) {
@@ -258,6 +238,12 @@ public class Analysis {
 			    	refreshOldMapping(e.getObjectMapping());
 			    	this.failedSynchroChange.getCreated().add(element);
 			      }
+				
+				createItemstoRemove.add(element);
+				
+				if(configurator.hasContinuation()){
+					return convertToUIModels();
+				}
 			}
 		}
 
@@ -267,6 +253,7 @@ public class Analysis {
 				Consumer<Kitchen> editDelete = kitchenEdit.andThen((kitchen) -> {
 					ItemSocket itemSocket =  kitchen.getItemSockets().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
 					System.out.println("item "+ itemSocket);
+					EcoreUtil.delete(itemSocket.getItem());
 				    EcoreUtil.delete(itemSocket);
 				});
 				try
@@ -274,9 +261,16 @@ public class Analysis {
 					this.kitchenToGrid.performAndPropagateTargetEdit(editDelete);
 			      } catch (SynchronisationFailedException e)
 			      {
+			    	  System.out.println("thrown delete exc");
 			    	  refreshOldMapping(e.getObjectMapping());
 			    	  this.failedSynchroChange.getDeleted().add(element);
 			      }
+				
+				deleteItemstoRemove.add(element);
+				
+				if(configurator.hasContinuation()){
+					return convertToUIModels();
+				}
 			}
 		}
 		
@@ -296,7 +290,13 @@ public class Analysis {
 			      {
 			    	  refreshOldMapping(e.getObjectMapping());
 			    	  this.failedSynchroChange.getMoved().add(element);
-			      }		
+			      }
+				
+				movedItemstoRemove.add(element);
+				
+				if(configurator.hasContinuation()){
+					return convertToUIModels();
+				}
 			}
 		}
 		
@@ -315,13 +315,18 @@ public class Analysis {
 				});
 				try
 			      {
-					kitchenToGrid.setConfigurator(new KitchenToGridConfigurator(askUserCallback));
 					this.kitchenToGrid.performAndPropagateSourceEdit(editGroupCreated);
 			      } catch (SynchronisationFailedException e)
 			      {
 			    	refreshOldMapping(e.getObjectMapping());
-			    	//this.failedSynchroChange.getCreated().add(element);
-			      }	
+			    	this.failedSynchroChange.getGroupCreated().add(uiGroup);
+			      }
+				
+				grpCreatedtoRemove.add(uiGroup);
+				
+				if(configurator.hasContinuation()){
+					return convertToUIModels();
+				}
 			}
 		}
 		
@@ -339,9 +344,6 @@ public class Analysis {
 							}
 						}
 					}
-//					Group group =  grid.getGroups().stream().filter(x -> x.getOccupies().get(0).getXIndex() == (uiGroup.getBlocks().get(0).getxIndex())) 
-//							.filter(x -> x.getOccupies().get(0).getYIndex() == (uiGroup.getBlocks().get(0).getyIndex()))
-//						.findFirst().orElse(null);
 					System.out.println("group "+ matchGroup);
 				    EcoreUtil.delete(matchGroup);
 				});
@@ -351,8 +353,14 @@ public class Analysis {
 			      } catch (SynchronisationFailedException e)
 			      {
 			    	refreshOldMapping(e.getObjectMapping());
-//			    	this.failedSynchroChange.getCreated().add(element);
-			      }	
+			    	this.failedSynchroChange.getGroupDeleted().add(uiGroup);
+			      }
+				
+				grpDeletedtoRemove.add(uiGroup);
+				
+				if(configurator.hasContinuation()){
+					return convertToUIModels();
+				}
 			}
 		}
 		
@@ -360,7 +368,7 @@ public class Analysis {
 		System.out.println("Grid noofblocks: " + this.kitchenToGrid.getSourceModel().getBlocks().size());
 		System.out.println("Grid noofgroups: " + this.kitchenToGrid.getSourceModel().getGroups().size());
 		System.out.println("Kitchen noofsockets: " + this.kitchenToGrid.getTargetModel().getItemSockets().size());
-		this.uiModelsAdapter = convertToUIModels(this.kitchenToGrid.getTargetModel(), this.kitchenToGrid.getSourceModel(), this.failedSynchroChange);
+		this.uiModelsAdapter = convertToUIModels();
 		
 		return this.uiModelsAdapter;
 	}
