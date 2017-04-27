@@ -29,10 +29,9 @@ File -> Import -> Git -> Projects from Git > Clone URI
 
    You will see the Project name on Project Explorer.
   
-3. After importing all 6 projects, check for the problems(if any). You might have to add the dependencies manually if missing.
+3. After importing all 5 projects, check for the problems(if any). You might have to add the dependencies manually if missing.
 
-   Check for all 6 projects, Build path -> Configure build Path -> Deployment Assembly, there must be a row present for Plug-in Dependencies. If not, please add it.
-   (You might have to do it for "Benchmarx" project as for other projects, it is already being added in .classpath file.)
+   Check for all 5 projects, Build path -> Configure build Path -> Deployment Assembly, there must be a row present for Plug-in Dependencies. If not, please add it.
 
 4. In Java EE perspective, Click on “Server” tab -> click on the link to create a new Sever -> Enter and Select the Tomcat server configured earlier -> Next -> Enter the Tomcat server path and JRE version -> Next -> Select the project name and add to the server and Finish
 
@@ -42,9 +41,9 @@ File -> Import -> Git -> Projects from Git > Clone URI
 
    Right click on Project -> Run As -> Run on Server -> select the Tomcat server and Finish
 
-   Now you will be able to run the project on browser by entering http://localhost:8080/Client/GUI.jsp
+   Now you will be able to run the project on browser by entering http://localhost:8080/Client/GUI.html
    
-6. For small changes, Tomcat automatically build and push the changes while in running mode. Only you have to refresh the browser to see the effect of changes.
+6. For small code changes, Tomcat automatically build and push the changes while in running mode. Only you have to refresh the browser to see the effect of changes.
    For big changes, changes in javascript file(logic.js) or if the automatic build is not working(sometimes), stop the server, clean and then start once again.   
 
 
