@@ -14,11 +14,27 @@ var LayoutBlocksDeleted = [];
 var previousClickedBlock = null;
 var lastAssignedColor = null;
 var GuiUserChoice = null;
-var x = 562;
-var y = 28;
+var x = 572;
+var y = 92;
 var scenarioLinks = $("a");
-var scenario1= new Array("do 1", "do 2");
-var scenario2= new Array("do 3", "do 4");
+var scenario0= new Array("Info 1: 1 item in Kitchen = 1 group in Grid",
+		"Info 2: 1 group in Grid = one or more same colored blocks",
+		"Info 3: Sink can be created on the Water Outlet wall and signifies 2 horizontal same colored blocks",
+		"Info 4: Fridge can be created on the Electrical fitting wall and signifies 2 vertical same colored blocks",
+		"Info 5: Table can be created anywhere and signifies 2 horizontal/vertical same colored blocks",
+		"Info 6: To start fresh, click on Start Fresh button",
+		"Info 7: To increase the number of blocks in Grid, enter a number between 5 - 10 and click on Start Fresh button",
+		"Kitchen - Add Item: Click anywhere on the canvas >> select the item to be added from dropdown >> click Add >> click Sync", 
+		"Kitchen - Delete Item: Click on the item >> click Delete >> click Sync", 
+		"Kitchen - Move Item: Click on the item >> drag to a new position >> click Sync",
+		"Grid - Add Item: Click on any white block. You will get a new color. Now, same color can be applied on any other white block with a click. For a new color, click thrice on any white block.>> Same colored blocks signifies one group >> click Sync",
+		"Grid - Delete Item: Click on one colored block and all the similar colored blocks will be blurred >> click Sync" );
+var scenario1= new Array("Create 2 sink in Kitchen", "Sync", "Move one sink to a different location(l1)", "Delete the other sink", "Sync", "Compare groups for both sinks in Grid");
+var scenario2= new Array("Fill 2 vertical blocks on northen wall with same color in Grid", "Sync", "UI will ask the user to choose bw the fitting rules","Enter the desired item number and press OK","Desired item will be created in Kitchen");
+var scenario3= new Array("Create a fridge on northen wall in Kitchen", "Sync", "Delete the fridge", "Create another fridge at the same location in Kitchen", "Sync", "Color changes of the newly created item (creation and deletion of the same item doesn't preserve the same state)");
+var scenario4= new Array("Create a fridge on the northen wall of the Kitchen", "Sync", "Fill a few different blocks with unique colors in Grid", "Sync", "Blocks will be preserved without transforming to any items also fridge will remain intact");
+var scenario5= new Array("Create a sink and a fridge in Kitchen", "Sync", "Move the sink away fron the wall", "Sync", "Change will be discarded and old consistent state will be restored");
+
 
 
 window.onload = init;
@@ -30,7 +46,7 @@ function init() {
 	KitItemsMoved.length = 0;
 	LayoutBlocksCreated.length = 0;
 	LayoutBlocksDeleted.length = 0;
-	if (isNaN($("#arrayNumber").val())){
+	if (isNaN($("#arrayNumber").val()) || $("#arrayNumber").val() < 5 || $("#arrayNumber").val() > 10 ){
 		$("#arrayNumber").val("");
 	}
 	noOfBlocks = ($("#arrayNumber").val() === "") ? 5 : $("#arrayNumber").val();
@@ -38,7 +54,7 @@ function init() {
 	lastAssignedColor = null;
 	GuiUserChoice = null;
 	$('#messageDialog').text("");
-	$('#itemList').text("");
+	$('#divItemList').hide();
 	scenarioLinks.removeClass("active");
 	$.ajax({
 		url : 'InitController',
@@ -59,6 +75,37 @@ function reInit() {
 	Layout.clear();
 	Workspace.clear();
 	drawGrid();
+}
+
+function drawBorder() {
+
+	Workspace.add(new fabric.Rect({
+		width : 5,
+		height : 500,
+		left : 0,
+		top : 0,
+		hasControls : false,
+		stroke : '#000000',
+		fill : 'green',
+		lockMovementX : true,
+		lockMovementY : true,
+		borderColor : 'transparent',
+		subType : 'fitting'
+	}));    
+
+	Workspace.add(new fabric.Rect({
+		width : 500,
+		height : 5,
+		left : 0,
+		top : 0,
+		hasControls : false,
+		stroke : '#000000',
+		fill : 'red',
+		lockMovementX : true,
+		lockMovementY : true,
+		borderColor : 'transparent',
+		subType : 'fitting'
+	}));
 }
 
 function undo() {
@@ -162,7 +209,7 @@ function userChoiceVisualize(uiModels) {
 	}
 	selection = prompt("Please enter" + options);
 	
-	if(selection === null || selection > (uiModels.userChoices.length - 1))
+	if(selection === null || selection > (uiModels.userChoices.length - 1) || isNaN(selection) || selection === "")
 		GuiUserChoice = uiModels.userChoices[0];
 	else
 	    GuiUserChoice = uiModels.userChoices[selection];
@@ -181,6 +228,7 @@ function initVisualize(uiModels) {
 		height : uiModels.workspace.width
 	});
 	drawGrid();
+	drawBorder();
 	console.log("Visualization done after initialization");
 }
 
@@ -188,6 +236,7 @@ function changeVisualize(uiModels) {
 
 	//Visualize Kitchen
 	Workspace.clear();
+	drawBorder();
 	if (uiModels!= null && uiModels.workspace.objects.length > 0) {
 		 //create items 
 		for (var i = 0; i < uiModels.workspace.objects.length; i++) {
@@ -264,7 +313,7 @@ function changeVisualize(uiModels) {
 
 function addSink(objectType, object_counter){
 	fabric.Image.fromURL('assets/sink.jpg', function(img) {
-		var oImg = img.set({ left: x - 562, top: y - 28, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+		var oImg = img.set({ left: x - 572, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
@@ -278,7 +327,7 @@ function addSinkVisualize(uiModels, val){
 
 function addTable(objectType, object_counter){
 	fabric.Image.fromURL('assets/table.jpg', function(img) {
-		var oImg = img.set({ left: x - 562, top: y - 28, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+		var oImg = img.set({ left: x - 572, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
@@ -292,7 +341,7 @@ function addTableVisualize(uiModels, val){
 
 function addFridge(objectType, object_counter){
 	fabric.Image.fromURL('assets/fridge.jpg', function(img) {
-		var oImg = img.set({ left: x - 562, top: y - 28, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+		var oImg = img.set({ left: x - 572, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
@@ -366,8 +415,8 @@ function addObject() {
 	KitItemsCreated.push({
 		id : objectType + "_" + object_counter,
 		type : objectType,
-		posX : x - 562,
-		posY : y - 28
+		posX : x - 572,
+		posY : y - 92
 	});
 	object_counter++;
 	
@@ -379,15 +428,19 @@ function addObject() {
 }
 
 function deleteObject() {
+	if(Workspace.getActiveObject() == null)
+		$('#messageDialog').text("Nothing to delete. Please select an item to delete.");
+	else{
+		handleDelete();
+		Workspace.getActiveObject().remove();
+		
+		console.log("created array len "+ KitItemsCreated.length );
+		console.log("deleted array len "+ KitItemsDeleted.length);
+		console.log("moved array len "+ KitItemsMoved.length);
+		console.log("blocks created array length "+ LayoutBlocksCreated.length);
+		console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
+	}
 	
-	handleDelete();
-	Workspace.getActiveObject().remove();
-	
-	console.log("created array len "+ KitItemsCreated.length );
-	console.log("deleted array len "+ KitItemsDeleted.length);
-	console.log("moved array len "+ KitItemsMoved.length);
-	console.log("blocks created array length "+ LayoutBlocksCreated.length);
-	console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 }
 
 function handleDelete(){
@@ -502,6 +555,13 @@ Workspace.on('mouse:move', function(options) {
 	};
 
 	if (options.target != null) {
+		if (options.target.get('subType') == 'fitting' && options.target.get('fill') == 'green') {
+			showInfo('Water Outlet');
+		}
+		else if (options.target.get('subType') == 'fitting' && options.target.get('fill') == 'red') {
+			showInfo('Electrical Fittings');
+		}
+		else
 		showInfo(options.target.subType);
 	}
 });
@@ -634,9 +694,12 @@ function genColor(){
 	return '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
 }
 
-function loadScenario(scenario){
+function loadScenario(header, scenario){
 	var scenarioElement;
+	$('#divItemList').show();
+	$('#itemHeader').text("");
 	$('#itemList').text("");
+	$('#itemHeader').append(header);
     for (i = 0; i < scenario.length; i++ ) {
         // Create the <LI> element
     	scenarioElement = document.createElement("LI");
@@ -645,6 +708,10 @@ function loadScenario(scenario){
         // Append the <LI> to the bottom of the <UL> element
         $('#itemList').append(scenarioElement);
     }
+}
+
+function clearInstruction(){
+	$('#divItemList').hide();
 }
 
 scenarioLinks.on("click",function(){
