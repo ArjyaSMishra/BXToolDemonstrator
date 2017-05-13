@@ -71,17 +71,11 @@ public class Analysis {
 	
 	public UIModels continueSynchronisation(String decision){
 		
-		// TODO:  Keep pending changes as a class variable, use saved set of changes to continue here
-		// TODO:  Remember which change element caused the pause.  
-		
 		configurator.continueSynchronisation(decision);
 		
-		// TODO: Continue process as normal (with the next change element)
 		return getUIModelsAfterAtomicDeltaPropagation(change); 
 	}
 
-	//TODO  Indicate in return value, if the sync process is finished or if user decisions are required
-	//TODO Ask configurator to decide this
 	private UIModels convertToUIModels() {
 
 		Layout layoutAdapter = new Layout();
@@ -134,10 +128,9 @@ public class Analysis {
 		if (kitchen != null && kitchen.getItemSockets().size() > 0) {
 			
 			for (ItemSocket itemSocket : kitchen.getItemSockets()) {
-				System.out.println("item id: "+ itemSocket.getId());
+			
 				if(itemSocket.getItem()!=null){
 					element = new Element();
-					System.out.println("item type: "+ itemSocket.getItem().eClass().getName());
 					element.setId(itemSocket.getId());
 					element.setPosX(itemSocket.getItem().getXPos());
 					element.setPosY(itemSocket.getItem().getYPos());
@@ -145,7 +138,6 @@ public class Analysis {
 					workspaceAdapter.getObjects().add(element);
 				}
 			}
-			System.out.println("workspace adapter item size " + workspaceAdapter.getObjects().size());
 		}
 		
 		// setting the UIModels
@@ -215,7 +207,6 @@ public class Analysis {
 		Consumer<Grid> gridEdit = (grid) -> {
 		};
 
-		System.out.println("create list length before edit: " + change.getCreated().size());
 		if (change.getCreated() != null && change.getCreated().size() > 0) {
 			for (Element element : change.getCreated()) {
 				Consumer<Kitchen> editCreate = kitchenEdit.andThen((kitchen) -> {
@@ -226,7 +217,6 @@ public class Analysis {
 					itemSocket.setId(element.getId());
 					item.setXPos(element.getPosX());
 					item.setYPos(element.getPosY());
-					System.out.println("item "+ item);
 					itemSocket.setItem(item);
 					kitchen.getItemSockets().add(itemSocket);
 				});
@@ -247,12 +237,10 @@ public class Analysis {
 			}
 		}
 
-		System.out.println("delete list length before edit: " + change.getDeleted().size());
 		if (change.getDeleted() != null && change.getDeleted().size() > 0) {
 			for (Element element : change.getDeleted()) {
 				Consumer<Kitchen> editDelete = kitchenEdit.andThen((kitchen) -> {
 					ItemSocket itemSocket =  kitchen.getItemSockets().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
-					System.out.println("item "+ itemSocket);
 					EcoreUtil.delete(itemSocket.getItem());
 				    EcoreUtil.delete(itemSocket);
 				});
@@ -261,7 +249,6 @@ public class Analysis {
 					this.kitchenToGrid.performAndPropagateTargetEdit(editDelete);
 			      } catch (SynchronisationFailedException e)
 			      {
-			    	  System.out.println("thrown delete exc");
 			    	  refreshOldMapping(e.getObjectMapping());
 			    	  this.failedSynchroChange.getDeleted().add(element);
 			      }
@@ -274,12 +261,10 @@ public class Analysis {
 			}
 		}
 		
-		System.out.println("moved list length before edit: " + change.getMoved().size());
 		if (change.getMoved() != null && change.getMoved().size() > 0) {
 			for (Element element : change.getMoved()) {
 				Consumer<Kitchen> editMoved = kitchenEdit.andThen((kitchen) -> {
 					ItemSocket itemSocket = kitchen.getItemSockets().stream().filter(x -> x.getId().equals(element.getId())).findFirst().orElse(null);
-					System.out.println("item "+ itemSocket);
 					itemSocket.getItem().setXPos(element.getPosX());
 					itemSocket.getItem().setYPos(element.getPosY());
 				});
@@ -300,12 +285,10 @@ public class Analysis {
 			}
 		}
 		
-		System.out.println("create group list length before edit: " + change.getGroupCreated().size());
 		if (change.getGroupCreated() != null && change.getGroupCreated().size() > 0) {
 			for (UIGroup uiGroup : change.getGroupCreated()) {
 				Consumer<Grid> editGroupCreated = gridEdit.andThen((grid) -> {
 					Group group = (Group) GridLanguageFactory.eINSTANCE.createGroup();
-					System.out.println("group "+ group);
 					for(Rectangle rect : uiGroup.getBlocks()){
 						this.blockColors.put(rect.getxIndex()+"_"+rect.getyIndex(), uiGroup.getFillColor());
 						Block block = grid.getBlocks().stream().filter(x -> x.getXIndex() == rect.getxIndex() && x.getYIndex() == rect.getyIndex()).findFirst().orElse(null);
@@ -330,7 +313,6 @@ public class Analysis {
 			}
 		}
 		
-		System.out.println("delete group list length before edit: " + change.getGroupDeleted().size());
 		if (change.getGroupDeleted() != null && change.getGroupDeleted().size() > 0) {
 			for (UIGroup uiGroup : change.getGroupDeleted()) {
 				Consumer<Grid> editGroupDeleted = gridEdit.andThen((grid) -> {
@@ -344,7 +326,6 @@ public class Analysis {
 							}
 						}
 					}
-					System.out.println("group "+ matchGroup);
 				    EcoreUtil.delete(matchGroup);
 				});
 				try
@@ -364,10 +345,6 @@ public class Analysis {
 			}
 		}
 		
-		System.out.println("Grid blocksize: " + this.kitchenToGrid.getSourceModel().getBlockSize());
-		System.out.println("Grid noofblocks: " + this.kitchenToGrid.getSourceModel().getBlocks().size());
-		System.out.println("Grid noofgroups: " + this.kitchenToGrid.getSourceModel().getGroups().size());
-		System.out.println("Kitchen noofsockets: " + this.kitchenToGrid.getTargetModel().getItemSockets().size());
 		this.uiModelsAdapter = convertToUIModels();
 		
 		return this.uiModelsAdapter;

@@ -20,10 +20,6 @@ public class KitchenToGridConfigurator implements ContinuationConfigurator {
 		this.alternatives = alternatives;
 		this.continuation = Optional.of(continuation);
 		
-		// TODO: Remove once this is working
-//		System.out.println("alternatives:");
-//		System.out.println(alternatives.stream().map(RuleResult::getRule).collect(Collectors.joining("\n")));
-//		continueSynchronisation(alternatives.iterator().next().getRule());
 	}
 	
 	@Override

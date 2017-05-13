@@ -9,3 +9,19 @@ a:hover, a:visited  {
 a.active {
      background-color:#C99;
 }
+
+.tooltip > .tooltip-inner {
+  border: 1px solid;
+  padding: 5px;
+  max-width: 450px;
+  color: black;
+  text-align: left;
+  background-color: white;
+  background: white;
+   
+  opacity: 1.0;
+  filter: alpha(opacity=100);
+} 
+   
+.tooltip > .tooltip-arrow { border-bottom-color:black; }
+.tooltip.in{opacity:1!important;}

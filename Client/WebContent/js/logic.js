@@ -14,9 +14,12 @@ var LayoutBlocksDeleted = [];
 var previousClickedBlock = null;
 var lastAssignedColor = null;
 var GuiUserChoice = null;
-var x = 572;
+var x = 584;
 var y = 92;
 var scenarioLinks = $("a");
+$('[data-toggle="tooltip"]').tooltip({
+    trigger : 'hover'
+}) 
 var scenario0= new Array("Info 1: 1 item in Kitchen = 1 group in Grid",
 		"Info 2: 1 group in Grid = one or more same colored blocks",
 		"Info 3: Sink can be created on the Water Outlet wall and signifies 2 horizontal same colored blocks",
@@ -33,9 +36,7 @@ var scenario1= new Array("Create 2 sink in Kitchen", "Sync", "Move one sink to a
 var scenario2= new Array("Fill 2 vertical blocks on northen wall with same color in Grid", "Sync", "UI will ask the user to choose bw the fitting rules","Enter the desired item number and press OK","Desired item will be created in Kitchen");
 var scenario3= new Array("Create a fridge on northen wall in Kitchen", "Sync", "Delete the fridge", "Create another fridge at the same location in Kitchen", "Sync", "Color changes of the newly created item (creation and deletion of the same item doesn't preserve the same state)");
 var scenario4= new Array("Create a fridge on the northen wall of the Kitchen", "Sync", "Fill a few different blocks with unique colors in Grid", "Sync", "Blocks will be preserved without transforming to any items also fridge will remain intact");
-var scenario5= new Array("Create a sink and a fridge in Kitchen", "Sync", "Move the sink away fron the wall", "Sync", "Change will be discarded and old consistent state will be restored");
-
-
+var scenario5= new Array("Create a sink and a fridge in Kitchen", "Sync", "Move the sink away fron the wall", "Sync", "Change will be discarded and old consistent state will be restored"); 
 
 window.onload = init;
 
@@ -86,7 +87,7 @@ function drawBorder() {
 		top : 0,
 		hasControls : false,
 		stroke : '#000000',
-		fill : 'green',
+		fill : 'blue',
 		lockMovementX : true,
 		lockMovementY : true,
 		borderColor : 'transparent',
@@ -205,7 +206,10 @@ function userChoiceVisualize(uiModels) {
 	var options = "";
 	var selection = 0;
 	for (var i = 0; i < uiModels.userChoices.length; i++) {
-		options = options + " " + i + " for " + uiModels.userChoices[i];
+		if(i < uiModels.userChoices.length - 1)
+		options = options + " " + i + " to " + uiModels.userChoices[i] + ", or";
+		else 
+			options = options + " " + i + " to " + uiModels.userChoices[i] + ".";
 	}
 	selection = prompt("Please enter" + options);
 	
@@ -267,7 +271,7 @@ function changeVisualize(uiModels) {
 			}
 		}
 	}
-	console.log(uiModels.failedDeltas);
+	
 	//Visualize Failed Deltas
 	if (uiModels!= null && uiModels.failedDeltas!= null && (uiModels.failedDeltas.created.length > 0 
 			|| uiModels.failedDeltas.deleted.length > 0 
@@ -313,7 +317,7 @@ function changeVisualize(uiModels) {
 
 function addSink(objectType, object_counter){
 	fabric.Image.fromURL('assets/sink.jpg', function(img) {
-		var oImg = img.set({ left: x - 572, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+		var oImg = img.set({ left: x - 584, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
@@ -327,21 +331,21 @@ function addSinkVisualize(uiModels, val){
 
 function addTable(objectType, object_counter){
 	fabric.Image.fromURL('assets/table.jpg', function(img) {
-		var oImg = img.set({ left: x - 572, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+		var oImg = img.set({ left: x - 584, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.15);
         Workspace.add(oImg);
         });
 }
 
 function addTableVisualize(uiModels, val){
 	fabric.Image.fromURL('assets/table.jpg', function(img) {
-		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].type, id: uiModels.workspace.objects[val].id}).scale(0.1);
+		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].type, id: uiModels.workspace.objects[val].id}).scale(0.15);
         Workspace.add(oImg);
         });
 }
 
 function addFridge(objectType, object_counter){
 	fabric.Image.fromURL('assets/fridge.jpg', function(img) {
-		var oImg = img.set({ left: x - 572, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
+		var oImg = img.set({ left: x - 584, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
@@ -415,16 +419,10 @@ function addObject() {
 	KitItemsCreated.push({
 		id : objectType + "_" + object_counter,
 		type : objectType,
-		posX : x - 572,
+		posX : x - 584,
 		posY : y - 92
 	});
 	object_counter++;
-	
-	console.log("created array length "+ KitItemsCreated.length );
-	console.log("deleted array length "+ KitItemsDeleted.length);
-	console.log("moved array length "+ KitItemsMoved.length);
-	console.log("blocks created array length "+ LayoutBlocksCreated.length);
-	console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 }
 
 function deleteObject() {
@@ -433,12 +431,6 @@ function deleteObject() {
 	else{
 		handleDelete();
 		Workspace.getActiveObject().remove();
-		
-		console.log("created array len "+ KitItemsCreated.length );
-		console.log("deleted array len "+ KitItemsDeleted.length);
-		console.log("moved array len "+ KitItemsMoved.length);
-		console.log("blocks created array length "+ LayoutBlocksCreated.length);
-		console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 	}
 	
 }
@@ -555,11 +547,11 @@ Workspace.on('mouse:move', function(options) {
 	};
 
 	if (options.target != null) {
-		if (options.target.get('subType') == 'fitting' && options.target.get('fill') == 'green') {
-			showInfo('Water Outlet');
+		if (options.target.get('subType') == 'fitting' && options.target.get('fill') == 'blue') {
+			showInfo('western wall with water outlet');
 		}
 		else if (options.target.get('subType') == 'fitting' && options.target.get('fill') == 'red') {
-			showInfo('Electrical Fittings');
+			showInfo('northern wall with electrical outlet');
 		}
 		else
 		showInfo(options.target.subType);
@@ -572,26 +564,18 @@ Workspace.on('mouse:out', function(e) {
 
 Workspace.on('object:added', function(e) {
 	if (e.target != null) {
-		console.log(e.target.id + " created");
+		console.log(e.target.subType + " created");
 	}
 });
 
 Workspace.on('object:removed', function(e) {
 	if (e.target != null) {
-		console.log(e.target.id + " deleted");
+		console.log(e.target.subType + " deleted");
 	}
 });
 
 Workspace.on('object:moving', function(e) {
 	handleMove();
-	console.log(e.target);
-	console.log(Workspace.getActiveObject());
-	
-	console.log("created len "+ KitItemsCreated.length );
-	console.log("deleted len "+ KitItemsDeleted.length);
-	console.log("moved len "+ KitItemsMoved.length);
-	console.log("blocks created array length "+ LayoutBlocksCreated.length);
-	console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 	
 });
 
@@ -646,12 +630,6 @@ Layout.on('mouse:down', function(e) {
 		
 		previousClickedBlock = e.target.id;
 		lastAssignedColor = newGeneratedColor;
-		
-		console.log("created len "+ KitItemsCreated.length );
-		console.log("deleted len "+ KitItemsDeleted.length);
-		console.log("moved len "+ KitItemsMoved.length);
-		console.log("blocks created array length "+ LayoutBlocksCreated.length);
-		console.log("blocks deleted array length "+ LayoutBlocksDeleted.length);
 	}
 });
 
