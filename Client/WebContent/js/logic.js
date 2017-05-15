@@ -4,6 +4,7 @@
 
 var Layout = new fabric.Canvas('canvasLayout');
 var Workspace = new fabric.Canvas('canvasWorkspace');
+var Uid = null;
 var object_counter;
 var noOfBlocks;
 var KitItemsCreated = [];
@@ -20,27 +21,36 @@ var scenarioLinks = $("a");
 $('[data-toggle="tooltip"]').tooltip({
     trigger : 'hover'
 }) 
-var scenario0= new Array("Info 1: 1 item in Kitchen = 1 group in Grid",
-		"Info 2: 1 group in Grid = one or more same colored blocks",
-		"Info 3: Sink can be created on the Water Outlet wall and signifies 2 horizontal same colored blocks",
-		"Info 4: Fridge can be created on the Electrical fitting wall and signifies 2 vertical same colored blocks",
-		"Info 5: Table can be created anywhere and signifies 2 horizontal/vertical same colored blocks",
-		"Info 6: To start fresh, click on Start Fresh button",
-		"Info 7: To increase the number of blocks in Grid, enter a number between 5 - 10 and click on Start Fresh button",
-		"Kitchen - Add Item: Click anywhere on the canvas >> select the item to be added from dropdown >> click Add >> click Sync", 
-		"Kitchen - Delete Item: Click on the item >> click Delete >> click Sync", 
-		"Kitchen - Move Item: Click on the item >> drag to a new position >> click Sync",
-		"Grid - Add Item: Click on any white block. You will get a new color. Now, same color can be applied on any other white block with a click. For a new color, click thrice on any white block.>> Same colored blocks signifies one group >> click Sync",
-		"Grid - Delete Item: Click on one colored block and all the similar colored blocks will be blurred >> click Sync" );
-var scenario1= new Array("Create 2 sink in Kitchen", "Sync", "Move one sink to a different location(l1)", "Delete the other sink", "Sync", "Compare groups for both sinks in Grid");
-var scenario2= new Array("Fill 2 vertical blocks on northen wall with same color in Grid", "Sync", "UI will ask the user to choose bw the fitting rules","Enter the desired item number and press OK","Desired item will be created in Kitchen");
-var scenario3= new Array("Create a fridge on northen wall in Kitchen", "Sync", "Delete the fridge", "Create another fridge at the same location in Kitchen", "Sync", "Color changes of the newly created item (creation and deletion of the same item doesn't preserve the same state)");
-var scenario4= new Array("Create a fridge on the northen wall of the Kitchen", "Sync", "Fill a few different blocks with unique colors in Grid", "Sync", "Blocks will be preserved without transforming to any items also fridge will remain intact");
-var scenario5= new Array("Create a sink and a fridge in Kitchen", "Sync", "Move the sink away fron the wall", "Sync", "Change will be discarded and old consistent state will be restored"); 
+var scenario0= new Array();
+var conclusion0 = "This example is a simplified kitchen planner that offers to the right a symbolic view (the ktichen) of all objects currently positioned in the kitchen, and to the left a layout view (the grid) showing how much space the objects occupy as coloured groups of blocks organised in a grid.<br> You can create or delete any number of sinks, tables, and fridges in the kitchen, and press Sync to propagate your changes to the grid.<br><br>" +
+        "You will find out that the western blue wall has all the water outlets, so you can only create sinks near enough to it, while the northern red wall has all the electrical outlets, meaning you can only create fridges near enough to it.<br><br>" +
+		"Tables can be created anywhere but you'll have to decide if you want the table to take up two horizontal or two vertical blocks in the grid. The synchroniser will prompt you for your preference if necessary.<br><br>" +
+		"You can of course move objects around in the kitchen if their final position is still legal.<br><br>" +
+		"The kitchen planner can also be used to find out what would fit in a certain group of blocks. To do this click a group of blocks in the grid so they have the same colour (Click on any white block. You will get a new color. Now, same color can be applied on any other white block with a click. For a new color, click thrice on any white block.) and then press Sync to get suggestions for which corresponding object can be placed in the kitchen.<br><br>" +
+        "Note that extra blocks are ignored if the object will not occupy them all, but are retained for the rest of the session. You can think of this as reserving empty or extra space (for chairs, or a flower pot, etc). It is also possible to vary the granularity of the grid by changing its height/width in number of blocks (this triggers a refresh).<br><br>" +
+		"You can delete whole groups of blocks in the grid by clicking on them (the colour of the group will be greyed out).<br><br>" +
+		"You cannot, however, move groups of blocks around in the grid, or perform changes in both the grid and the kitchen before pressing the Sync button.";
+
+var scenario1= new Array("Click on two vertical blocks in the grid so that they have the same colour and the top-most block is directly on the northern wall", "Synchronise", "You will be asked to choose to create either a sink, or a vertical table", "Enter a number representing your preference", "Your preferred object will be created in the kitchen");
+var conclusion1 = "This demonstrates how user interaction (or some other, possibly automated means) can be used to decide between multiple equally consistent results.";
+var scenario2= new Array("Create a sink in the kitchen (recall that this is only possible directly on the western wall)", "Synchronise", "Now move the sink away from the western wall and synchronise","Your change will be rejected as there exists no grid that would be consistent with this change and new kitchen");
+var conclusion2 = "This demonstrates that not all possible changes can be synchronised (due to the underlying consistency relation defined by our synchronisation rules). Other example for changes that are possible but will be rejected include creating or moving fridges away from the northern wall, or moving any objects on top of each other.";
+var scenario3= new Array("Create two sinks, sink_1 and sink_2, somewhere along the western wall of the kitchen", "Synchronise and note the colours of the two groups created in the grid for the sinks", "Now move sink_1 to a new valid location (along the western wall) via drag and drop", 
+		"Also move sink_2 to a new valid location, but this time by deleting it and then recreating a sink at the desired new location", 
+		"Synchronise and note how both groups are moved correspondingly in the grid, but that the colour of the group for sink_1 is retained, while the group corresponding to the second sink now has a new colour");
+var conclusion3 = "This demonstrates that the actual change performed can have an effect on synchronisation results, even if the final result (the kitchen here) might appear to be exactly the same in both cases (the sinks are both effectively moved to their new positions as far as we can see and thus care).";
+var scenario4= new Array("Create a fridge on the northern wall of the kitchen", "Synchronise to update the grid", "Fill a few isolated and single blocks with unique colours in the grid", "Synchronise (these blocks will be ignored and the kitchen remains unchanged)", "Now move the fridge along the wall in the kitchen and synchronise",
+		"As you might expect, the isolated blocks that have no relevance for the kitchen are nonetheless preserved in the grid");
+var conclusion4 = "This demonstrates that it is possible to avoid unnecessary information loss (the single blocks), if the old state of the grid is taken into account. It would be impossible to do this if the grid were created solely from the kitchen (and vice-versa).";
+var scenario5= new Array("Create a fridge on the northern wall of the kitchen", "Synchronise (and note the colour of the group of blocks created in the grid)", "Now delete the fridge and synchronise", "Assuming the deletion was a mistake, undo it by re-creating the fridge and synchronising", 
+		"Although the kitchen is now (for all we care) in the same state it was in after Step (2), the grid is, however, in a different state as the re-created group has a different colour than before");
+var conclusion5 = "This demonstrates that undoing changes in the kitchen to revert to a previous state does not necessarily imply that this can be reflected analogously in the grid.";
 
 window.onload = init;
+window.onunload = close;
 
 function init() {
+	Uid = generateUUID();
 	object_counter = 0;
 	KitItemsCreated.length = 0;
 	KitItemsDeleted.length = 0;
@@ -63,6 +73,7 @@ function init() {
 		dataType : 'json',
 		data : {
 			initCanvas : 1,
+			userID: Uid,
 			blockArrayNo : noOfBlocks
 		},
 		success : function(data) {
@@ -76,6 +87,33 @@ function reInit() {
 	Layout.clear();
 	Workspace.clear();
 	drawGrid();
+}
+
+function close() {
+	$.ajax({
+		url : 'InitController',
+		type : 'POST',
+		dataType : 'json',
+		data : {
+			exitDemo : 1,
+			userID: Uid,
+		},
+		success : function(data) {
+			Uid = null;
+		}
+	});
+}
+
+function generateUUID() { // Public Domain/MIT
+    var d = new Date().getTime();
+    if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+        d += performance.now(); //use high-precision timer if available
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d / 16);
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
 }
 
 function drawBorder() {
@@ -137,7 +175,7 @@ function sychro() {
 		
 	}
 	else if(KitItemsCreated.length <= 0 && KitItemsDeleted.length <= 0 && KitItemsMoved.length <= 0 && LayoutBlocksCreated.length <= 0 && LayoutBlocksDeleted.length <= 0 ){
-		$('#messageDialog').text("Nothing to propagate. Please Make some changes for the synchronization to happen.");
+		$('#messageDialog').text("There is currently no change to propagate.");
 	}
 	else{
 		$('#messageDialog').text("");
@@ -153,6 +191,7 @@ function propagateChanges(){
 		dataType : 'json',
 		data : {
 			loadChanges : 1,
+			userID: Uid,
 			ItemsCreated : JSON.stringify(KitItemsCreated),
 			ItemsDeleted : JSON.stringify(KitItemsDeleted),
 			ItemsMoved : JSON.stringify(KitItemsMoved),
@@ -187,6 +226,7 @@ function propagateUserChoices(){
 		dataType : 'json',
 		data : {
 			userChoice : 1,
+			userID: Uid,
 			UserChoice : JSON.stringify(GuiUserChoice),
 		},
 		success : function(data) {
@@ -278,7 +318,7 @@ function changeVisualize(uiModels) {
 			|| uiModels.failedDeltas.moved.length > 0
 			|| uiModels.failedDeltas.groupCreated.length > 0
 			|| uiModels.failedDeltas.groupDeleted.length > 0) ) {
-		var failedDeltaMsg = "Not Propagated changes are: ";
+		var failedDeltaMsg = "The following changes were rejected: ";
 		if(uiModels.failedDeltas.created.length > 0){
 			for(var i = 0; i < uiModels.failedDeltas.created.length; i++) {
 				failedDeltaMsg = failedDeltaMsg + " Creation of " + uiModels.failedDeltas.created[i].type;
@@ -672,11 +712,12 @@ function genColor(){
 	return '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
 }
 
-function loadScenario(header, scenario){
+function loadScenario(header, scenario, conclusion){
 	var scenarioElement;
 	$('#divItemList').show();
 	$('#itemHeader').text("");
 	$('#itemList').text("");
+	$('#itemConclusion').text("");
 	$('#itemHeader').append(header);
     for (i = 0; i < scenario.length; i++ ) {
         // Create the <LI> element
@@ -686,6 +727,7 @@ function loadScenario(header, scenario){
         // Append the <LI> to the bottom of the <UL> element
         $('#itemList').append(scenarioElement);
     }
+    $('#itemConclusion').append(conclusion);
 }
 
 function clearInstruction(){
