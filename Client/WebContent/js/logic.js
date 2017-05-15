@@ -356,42 +356,42 @@ function changeVisualize(uiModels) {
 }
 
 function addSink(objectType, object_counter){
-	fabric.Image.fromURL('assets/sink.jpg', function(img) {
+	fabric.Image.fromURL('assets/sink.png', function(img) {
 		var oImg = img.set({ left: x - 584, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
 
 function addSinkVisualize(uiModels, val){
-	fabric.Image.fromURL('assets/sink.jpg', function(img) {
+	fabric.Image.fromURL('assets/sink.png', function(img) {
 		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].type, id: uiModels.workspace.objects[val].id}).scale(0.1);
         Workspace.add(oImg);
         });
 }
 
 function addTable(objectType, object_counter){
-	fabric.Image.fromURL('assets/table.jpg', function(img) {
+	fabric.Image.fromURL('assets/table.png', function(img) {
 		var oImg = img.set({ left: x - 584, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.15);
         Workspace.add(oImg);
         });
 }
 
 function addTableVisualize(uiModels, val){
-	fabric.Image.fromURL('assets/table.jpg', function(img) {
+	fabric.Image.fromURL('assets/table.png', function(img) {
 		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].type, id: uiModels.workspace.objects[val].id}).scale(0.15);
         Workspace.add(oImg);
         });
 }
 
 function addFridge(objectType, object_counter){
-	fabric.Image.fromURL('assets/fridge.jpg', function(img) {
+	fabric.Image.fromURL('assets/fridge.png', function(img) {
 		var oImg = img.set({ left: x - 584, top: y - 92, subType: objectType, id: objectType + "_" + object_counter}).scale(0.1);
         Workspace.add(oImg);
         });
 }
 
 function addFridgeVisualize(uiModels, val){
-	fabric.Image.fromURL('assets/fridge.jpg', function(img) {
+	fabric.Image.fromURL('assets/fridge.png', function(img) {
 		var oImg = img.set({ left: uiModels.workspace.objects[val].posX, top: uiModels.workspace.objects[val].posY, subType: uiModels.workspace.objects[val].type, id: uiModels.workspace.objects[val].id}).scale(0.1);
         Workspace.add(oImg);
         });
