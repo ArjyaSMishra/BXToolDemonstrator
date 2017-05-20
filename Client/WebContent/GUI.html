@@ -30,7 +30,7 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">How To Play<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#" onclick="loadScenario('Overview', scenario0, conclusion0)">Overview</a></li>
+            <li><a href="Content.html" target="_blank">Overview</a></li>
             <li><a href="#" onclick="loadScenario('Scenario 1', scenario1, conclusion1)">Scenario 1</a></li>
             <li><a href="#" onclick="loadScenario('Scenario 2', scenario2, conclusion2)">Scenario 2</a></li>
             <li><a href="#" onclick="loadScenario('Scenario 3', scenario3, conclusion3)">Scenario 3</a></li>
@@ -39,8 +39,8 @@
           </ul>
         </li>
         <li><a href="#" data-toggle="tooltip" data-placement="bottom" title="Hides the description text" onclick="clearInstruction()">Clear</a></li>
-        <li><a href="Rules.html" target="_blank" data-toggle="tooltip" data-placement="bottom" title="Used Syncronization rules in a new tab">Sync Rules</a></li>
-        <li><a href="About.html" target="_blank" data-toggle="tooltip" data-placement="bottom" title="About the Demon-BX in a new tab">About</a></li>
+        <li><a href="Rules.html" target="_blank" data-toggle="tooltip" data-placement="bottom" title="View Syncronization Rules in a new Tab">Sync Rules</a></li>
+        <li><a href="About.html" target="_blank" data-toggle="tooltip" data-placement="bottom" title="About Demon-BX in a new Tab">About</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
@@ -52,11 +52,11 @@
 <tr>
 <td>Layout
 <canvas id="canvasLayout" width="500" height="500" style="border:1px solid #000000"></canvas>
-<input type="text" id="arrayNumber" class="input-box" placeholder="Enter grid size([5,10])" />
+<input type="text" id="arrayNumber" class="input-box" placeholder="Enter grid size: [5,10]" />
 <button type="submit" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Start fresh" onclick="reInit()">
 Reset
 </button>
-<button type="submit" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Undo changes in Layout before Sync button is pressed" onclick="undo()">
+<button type="submit" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Undo the changes done in Layout which are not to be Synchronized" onclick="undo()">
 Undo Changes
 </button>
 </td>

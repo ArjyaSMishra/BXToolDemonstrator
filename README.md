@@ -5,10 +5,10 @@ Prerequisite:
 Eclipse Configuration:
 Install Eclipse Modelling Tool- EMT(Preferably NEON) with below plug-ins:
 a) eMoflon (https://emoflon.github.io/eclipse-plugin/emoflon_2.22.0/update-site2/)
-b) Web Tools Platform(wtp for Neon - http://download.eclipse.org/webtools/repository/neon/)
+b) Web Tools Platform (WTP Version 3.8.1. SDK not required.)(wtp for Neon - http://download.eclipse.org/webtools/repository/neon/)
 
 Tomcat:
-Install Tomcat 7.0 on your system. You can follow the below link for the installation process.
+Install Tomcat Version 7.0 on your system. You can follow the below link for the installation process.
 (http://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
 
 

@@ -102,7 +102,6 @@ public class InitController extends HttpServlet {
 		this.UUID = gson.fromJson(request.getParameter("userID"), String.class);
 
 		this.uidMappings.put(this.UUID, this.adapterAnalysis);
-		System.out.println("uidmap size:" + this.uidMappings.size());
 		this.adapterAnalysis.initeMoflonTool(blockArrayNo);
 		this.uimodels = this.adapterAnalysis.getUIModels();
 

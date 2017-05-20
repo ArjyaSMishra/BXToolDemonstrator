@@ -17,7 +17,6 @@ var lastAssignedColor = null;
 var GuiUserChoice = null;
 var x = 584;
 var y = 92;
-var scenarioLinks = $("a");
 $('[data-toggle="tooltip"]').tooltip({
     trigger : 'hover'
 }) 
@@ -31,18 +30,18 @@ var conclusion0 = "This example is a simplified kitchen planner that offers to t
 		"You can delete whole groups of blocks in the grid by clicking on them (the colour of the group will be greyed out).<br><br>" +
 		"You cannot, however, move groups of blocks around in the grid, or perform changes in both the grid and the kitchen before pressing the Sync button.";
 
-var scenario1= new Array("Click on two vertical blocks in the grid so that they have the same colour and the top-most block is directly on the northern wall", "Synchronise", "You will be asked to choose to create either a sink, or a vertical table", "Enter a number representing your preference", "Your preferred object will be created in the kitchen");
-var conclusion1 = "This demonstrates how user interaction (or some other, possibly automated means) can be used to decide between multiple equally consistent results.";
-var scenario2= new Array("Create a sink in the kitchen (recall that this is only possible directly on the western wall)", "Synchronise", "Now move the sink away from the western wall and synchronise","Your change will be rejected as there exists no grid that would be consistent with this change and new kitchen");
-var conclusion2 = "This demonstrates that not all possible changes can be synchronised (due to the underlying consistency relation defined by our synchronisation rules). Other example for changes that are possible but will be rejected include creating or moving fridges away from the northern wall, or moving any objects on top of each other.";
-var scenario3= new Array("Create two sinks, sink_1 and sink_2, somewhere along the western wall of the kitchen", "Synchronise and note the colours of the two groups created in the grid for the sinks", "Now move sink_1 to a new valid location (along the western wall) via drag and drop", 
-		"Also move sink_2 to a new valid location, but this time by deleting it and then recreating a sink at the desired new location", 
+var scenario1= new Array("Click on two vertical blocks in the layout so that they have the same colour and the top-most block is directly on the northern(top) wall", "Synchronise", "You will be asked to choose to create either a sink, or a vertical table", "Enter a number representing your preference", "Your preferred object will be created in the kitchen");
+var conclusion1 = "This demonstrates how user interaction (or some other, possibly automated means) can be used to decide between multiple equally consistent results.<br><br>" + "Reset and Go to the next scenario.";
+var scenario2= new Array("Create a sink in the kitchen (recall that this is only possible directly on the blue wall)", "Synchronise", "Now move the sink away from the blue wall and synchronise","Your change will be rejected as there exists no grid that would be consistent with this change and new kitchen");
+var conclusion2 = "This demonstrates that not all possible changes can be synchronised (according to our current rules). Other example for changes in the kitchen that can be made but will be rejected include creating or moving fridges too far away from the red wall, or moving any objects on top of each other.<br><br>" + "Reset and Go to the next scenario.";
+var scenario3= new Array("Create two sinks, sink_1 and sink_2 apart from each other, somewhere along the blue wall of the kitchen", "Synchronise and note the colours of the two groups created in the grid for the sinks", "Now move sink_1 to a new valid location (along the blue wall) via drag and drop", 
+		"Also move sink_2 to a new valid location, but this time by deleting it and then recreating a sink at the desired new location (along the blue wall)", 
 		"Synchronise and note how both groups are moved correspondingly in the grid, but that the colour of the group for sink_1 is retained, while the group corresponding to the second sink now has a new colour");
-var conclusion3 = "This demonstrates that the actual change performed can have an effect on synchronisation results, even if the final result (the kitchen here) might appear to be exactly the same in both cases (the sinks are both effectively moved to their new positions as far as we can see and thus care).";
-var scenario4= new Array("Create a fridge on the northern wall of the kitchen", "Synchronise to update the grid", "Fill a few isolated and single blocks with unique colours in the grid", "Synchronise (these blocks will be ignored and the kitchen remains unchanged)", "Now move the fridge along the wall in the kitchen and synchronise",
+var conclusion3 = "This demonstrates that the actual change performed can have an effect on synchronisation results, even if the final result (the kitchen here) might appear to be exactly the same in both cases (the sinks are both moved to their new positions as far as we can see and thus care).<br><br>" + "Reset and Go to the next scenario.";
+var scenario4= new Array("Create a fridge on the red wall of the kitchen", "Synchronise to update the grid", "Fill a few isolated and single blocks with unique colours in the grid", "Synchronise (these blocks will be ignored and the kitchen remains unchanged)", "Now move the fridge along the red wall in the kitchen and synchronise",
 		"As you might expect, the isolated blocks that have no relevance for the kitchen are nonetheless preserved in the grid");
-var conclusion4 = "This demonstrates that it is possible to avoid unnecessary information loss (the single blocks), if the old state of the grid is taken into account. It would be impossible to do this if the grid were created solely from the kitchen (and vice-versa).";
-var scenario5= new Array("Create a fridge on the northern wall of the kitchen", "Synchronise (and note the colour of the group of blocks created in the grid)", "Now delete the fridge and synchronise", "Assuming the deletion was a mistake, undo it by re-creating the fridge and synchronising", 
+var conclusion4 = "This demonstrates that it is possible to avoid unnecessary information loss (the single blocks), if the old state of the grid is taken into account. It would be impossible to do this if the grid were created solely from the kitchen (and vice-versa).<br><br>" + "Reset and Go to the next scenario.";
+var scenario5= new Array("Create a fridge on the red wall of the kitchen", "Synchronise (and note the colour of the group of blocks created in the grid)", "Now delete the fridge and synchronise", "Assuming the deletion was a mistake, undo it by re-creating the fridge and synchronising", 
 		"Although the kitchen is now (for all we care) in the same state it was in after Step (2), the grid is, however, in a different state as the re-created group has a different colour than before");
 var conclusion5 = "This demonstrates that undoing changes in the kitchen to revert to a previous state does not necessarily imply that this can be reflected analogously in the grid.";
 
@@ -66,7 +65,6 @@ function init() {
 	GuiUserChoice = null;
 	$('#messageDialog').text("");
 	$('#divItemList').hide();
-	scenarioLinks.removeClass("active");
 	$.ajax({
 		url : 'InitController',
 		type : 'POST',
@@ -148,16 +146,21 @@ function drawBorder() {
 }
 
 function undo() {
-	KitItemsCreated.length = 0;
-	KitItemsDeleted.length = 0;
-	KitItemsMoved.length = 0;
-	LayoutBlocksCreated.length = 0;
-	LayoutBlocksDeleted.length = 0;
-	previousClickedBlock = null;
-	lastAssignedColor = null;
-	GuiUserChoice = null;
-	propagateChanges();
-	$('#messageDialog').text("Changes undone.");
+	if (LayoutBlocksCreated.length <= 0 && LayoutBlocksDeleted.length <= 0){
+		$('#messageDialog').text("There is currently no change to be undone in Layout.");
+	}
+	else {
+		KitItemsCreated.length = 0;
+		KitItemsDeleted.length = 0;
+		KitItemsMoved.length = 0;
+		LayoutBlocksCreated.length = 0;
+		LayoutBlocksDeleted.length = 0;
+		previousClickedBlock = null;
+		lastAssignedColor = null;
+		GuiUserChoice = null;
+		propagateChanges();
+		$('#messageDialog').text("Changes undone in Layout.");
+	}
 }
 
 function sychro() {
@@ -733,11 +736,6 @@ function loadScenario(header, scenario, conclusion){
 function clearInstruction(){
 	$('#divItemList').hide();
 }
-
-scenarioLinks.on("click",function(){
-	scenarioLinks.removeClass("active");
-  $(this).toggleClass("active");
-});
 
 function addGroupToDeleteGroup(colorBeforeChange){
 	

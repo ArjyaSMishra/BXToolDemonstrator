@@ -3,12 +3,6 @@
     height:18px;
     width:60px;
 }
-a:hover, a:visited  { 
-    color: green;
-}
-a.active {
-     background-color:#C99;
-}
 
 .tooltip > .tooltip-inner {
   border: 1px solid;
