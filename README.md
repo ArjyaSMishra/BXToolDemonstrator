@@ -12,7 +12,7 @@ Install Tomcat Version 7.0 on your system. You can follow the below link for the
 (http://crunchify.com/step-by-step-guide-to-setup-and-install-apache-tomcat-server-in-eclipse-development-environment-ide/)
 
 
-Import projects from Git:
+Import projects from Git, Build and Run:
 (http://stackoverflow.com/questions/6760115/importing-a-github-project-into-eclipse)
 File -> Import -> Git -> Projects from Git > Clone URI
 
@@ -48,3 +48,28 @@ File -> Import -> Git -> Projects from Git > Clone URI
 
 
 Note: For changes/testing in Client or Adapter, make changes on branch: “Prof” and then push it to “master”.
+
+Deploy project on Web-Server:
+1. First set-up a web-server with java 8 and Tomcat 7.0 installed in it.
+
+2. Create a war file (Client.war) from the Client (Right click on Client Project -> Export -> WAR file) and save it at a desired location.
+
+3. Locate "webapps" folder inside tomcat7 default directory on the web-server. Move the newly generated WAR file into the web-server's tomcat7/webapps folder.
+
+4. Start the tomcat on web-server -- On web-server open a command prompt. Go to tomcat7 default directory and run the "startup.sh" file. 
+   For example,
+   $: cd /opt/tomcat7
+   $: ./bin/startup.sh
+   
+   Now you will be able to run the project on browser by entering http://server-name:8080/Client/GUI.html
+   
+5. For re-deployment of the WAR file, follow the below steps:
+   
+   a) create a new WAR file (Client.war) from Client as described in Step 2.
+   b) Stop the tomcat running on web-server -- On web-server open a command prompt. Go to tomcat7 default directory and run the "shutdown.sh" file.   
+      For example,
+      $: cd /opt/tomcat7
+      $: ./bin/shutdown.sh 
+   c) Delete the already existing Client.war file and Client folder from web-server's tomcat7/webapps folder.
+   d) Move the newly generated WAR file as in step 5(a) into the web-server's tomcat7/webapps folder.   
+   e) Start the tomcat on web-server as described in Step 4.
