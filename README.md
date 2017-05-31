@@ -4,7 +4,9 @@ Prerequisite:
 
 Eclipse Configuration:
 Install Eclipse Modelling Tool- EMT(Preferably NEON) with below plug-ins:
+
 a) eMoflon (https://emoflon.github.io/eclipse-plugin/emoflon_2.22.0/update-site2/)
+
 b) Web Tools Platform (WTP Version 3.8.1. SDK not required.)(wtp for Neon - http://download.eclipse.org/webtools/repository/neon/)
 
 Tomcat:
@@ -50,7 +52,7 @@ File -> Import -> Git -> Projects from Git > Clone URI
 Note: For changes/testing in Client or Adapter, make changes on branch: “Prof” and then push it to “master”.
 
 Deploy project on Web-Server:
-1. First set-up a Web-Server with java 8 and Tomcat 7.0 installed in it. You will need a login id with admin rights. (Current Web-Server: bxtransform.cs.upb.de)
+1. First set-up a Web-Server with java 8 and Tomcat 7.0 installed in it. You will need a login id with admin rights. (Current ready Web-Server: bxtransform.cs.upb.de)
 
 2. Create a war file (Client.war) from the Client (Right click on Client Project -> Export -> WAR file) and save it at a desired location.
 
@@ -78,6 +80,7 @@ Deploy project on Web-Server:
    c) Delete the already existing Client.war file and Client folder from Web-Server's tomcat7/webapps folder.
    
       For example,
+	  $: cd /opt/tomcat7/webapps
       $: rm Client.war
       $: rm -rf Client
    
