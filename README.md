@@ -50,13 +50,15 @@ File -> Import -> Git -> Projects from Git > Clone URI
 Note: For changes/testing in Client or Adapter, make changes on branch: “Prof” and then push it to “master”.
 
 Deploy project on Web-Server:
-1. First set-up a web-server with java 8 and Tomcat 7.0 installed in it.
+1. First set-up a Web-Server with java 8 and Tomcat 7.0 installed in it. You will need a login id with admin rights. (Current Web-Server: bxtransform.cs.upb.de)
 
 2. Create a war file (Client.war) from the Client (Right click on Client Project -> Export -> WAR file) and save it at a desired location.
 
-3. Locate "webapps" folder inside tomcat7 default directory on the web-server. Move the newly generated WAR file into the web-server's tomcat7/webapps folder.
+3. Login to the Web-Server with your login id (admin rights). Locate "webapps" folder inside tomcat7 default directory on the Web-Server. 
+   Move the newly generated WAR file as in step 2 into the Web-Server's tomcat7/webapps folder.
 
-4. Start the tomcat on web-server -- On web-server open a command prompt. Go to tomcat7 default directory and run the "startup.sh" file. 
+4. Start the tomcat on Web-Server -- Open a command prompt on the Web-Server. Go to tomcat7 default directory and run the "startup.sh" file. 
+
    For example,
    $: cd /opt/tomcat7
    $: ./bin/startup.sh
@@ -66,10 +68,19 @@ Deploy project on Web-Server:
 5. For re-deployment of the WAR file, follow the below steps:
    
    a) create a new WAR file (Client.war) from Client as described in Step 2.
-   b) Stop the tomcat running on web-server -- On web-server open a command prompt. Go to tomcat7 default directory and run the "shutdown.sh" file.   
+   
+   b) Stop the tomcat running on the Web-Server -- Open a command prompt on the Web-Server. Go to tomcat7 default directory and run the "shutdown.sh" file.  
+   
       For example,
       $: cd /opt/tomcat7
       $: ./bin/shutdown.sh 
-   c) Delete the already existing Client.war file and Client folder from web-server's tomcat7/webapps folder.
-   d) Move the newly generated WAR file as in step 5(a) into the web-server's tomcat7/webapps folder.   
-   e) Start the tomcat on web-server as described in Step 4.
+	  
+   c) Delete the already existing Client.war file and Client folder from Web-Server's tomcat7/webapps folder.
+   
+      For example,
+      $: rm Client.war
+      $: rm -rf Client
+   
+   d) Move the newly generated WAR file as in step 5(a) into the Web-Server's tomcat7/webapps folder. 
+   
+   e) Start the tomcat on the Web-Server as described in Step 4.
